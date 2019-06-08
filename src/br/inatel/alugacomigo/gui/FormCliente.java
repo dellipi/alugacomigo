@@ -2,6 +2,10 @@ package br.inatel.alugacomigo.gui;
 
 import br.inatel.alugacomigo.dao.*;
 import br.inatel.alugacomigo.classes.*;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class FormCliente extends javax.swing.JFrame {
     
@@ -11,6 +15,100 @@ public class FormCliente extends javax.swing.JFrame {
     public FormCliente() {
         initComponents();
     }
+    
+    private boolean camposVazios() {
+        boolean verificacao = false;
+        if (campoNome.getText().equals("")
+                || campoRG.getText().equals("  -   .   .   ")
+                || campoCPF.getText().equals("   .   .   -  ")
+                || campoDataNascimento.getText().equals(" / / ")
+                || campoLogradouro.getText().equals("")
+                || campoNumero.getText().equals("")
+                || campoBairro.getText().equals("")
+                // || campoComplemento.getText().equals("") o complemento pode ser vazio
+                || campoSelecaoEstado.getSelectedIndex() == 0
+                || campoCidade.getText().equals("")
+                || campoTelefone.getText().equals("( )     -    ")
+                || campoEmail.getText().equals("")
+                || campoUsuario.getText().equals("")
+                || campoSenha.getText().equals("")) {
+            verificacao = true;
+        }
+        return (verificacao);
+    }
+
+    private void preencherClasse(){
+        cliente.setNome(campoNome.getText());
+        cliente.setRg(campoRG.getText());
+        cliente.setCpf(campoCPF.getText());
+        cliente.setDataNascimento(campoDataNascimento.getText());
+        cliente.setEnderecoLogradouro(campoLogradouro.getText());
+        cliente.setEnderecoBairro(campoBairro.getText());
+        cliente.setEnderecoNumero(Integer.parseInt(campoNumero.getText()));
+        cliente.setEnderecoComplemento(campoComplemento.getText());
+        cliente.setEnderecoEstado(campoSelecaoEstado.getSelectedItem().toString());
+        cliente.setEnderecoCidade(campoCidade.getText());
+        cliente.setTelefoneCelular(campoTelefone.getText());
+        cliente.setEmail(campoEmail.getText());
+        cliente.setUsuario(campoTelefone.getText());
+        cliente.setSenha(campoSenha.getText());
+    }
+
+    private void preencherCampos() {
+        campoNome.setText(cliente.getNome());
+        campoRG.setText(cliente.getRg());
+        campoCPF.setText(cliente.getCpf());
+        campoDataNascimento.setText(cliente.getDataNascimento());
+        campoLogradouro.setText(cliente.getEnderecoLogradouro());
+        campoBairro.setText(cliente.getEnderecoBairro());
+        campoNumero.setText(String.valueOf(cliente.getEnderecoNumero()));
+        campoComplemento.setText(cliente.getEnderecoComplemento());
+        campoSelecaoEstado.setSelectedItem(cliente.getEnderecoEstado());
+        campoCidade.setText(cliente.getEnderecoCidade());
+        campoTelefone.setText(cliente.getTelefoneCelular());
+        campoEmail.setText(cliente.getEmail());
+        campoUsuario.setText(cliente.getUsuario());
+        campoSenha.setText(cliente.getSenha());
+    }
+
+    private void limpar() {
+        campoCPFPesquisa.setValue(null);
+        campoNome.setText(null);
+        campoRG.setValue(null);
+        campoCPF.setValue(null);
+        campoDataNascimento.setValue(null);
+        campoLogradouro.setText(null);
+        campoBairro.setText(null);
+        campoNumero.setText(null);
+        campoComplemento.setText(null);
+        campoSelecaoEstado.setSelectedIndex(0);
+        campoCidade.setText(null);
+        campoTelefone.setText(null);
+        campoEmail.setText(null);
+        campoUsuario.setText(null);
+        campoSenha.setText(null);
+    }
+
+    private void padraoBotoes(boolean ativacao) {
+        if (ativacao == true) {
+            botaoPesquisar.setText("CANCELAR");
+            botaoInserir.setEnabled(false);
+            botaoExcluir.setEnabled(true);
+            botaoEditar.setEnabled(true);
+            botaoLimpar.setEnabled(false);
+            campoCPF.setEnabled(false);
+        } else {
+            botaoPesquisar.setText("PESQUISAR");
+            botaoPesquisar.setSelected(false);
+            botaoInserir.setEnabled(true);
+            botaoExcluir.setEnabled(false);
+            botaoEditar.setEnabled(false);
+            botaoLimpar.setEnabled(true);
+            campoCPF.setEnabled(true);
+            limpar();
+        }
+    }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -23,8 +121,8 @@ public class FormCliente extends javax.swing.JFrame {
         painelPesquisa = new javax.swing.JPanel();
         labelSubtitulo1 = new javax.swing.JLabel();
         labelCPFPesquisa = new javax.swing.JLabel();
-        botaoPesquisar = new javax.swing.JButton();
         campoCPFPesquisa = new javax.swing.JFormattedTextField();
+        botaoPesquisar = new javax.swing.JToggleButton();
         painelFormulario = new javax.swing.JPanel();
         labelNome = new javax.swing.JLabel();
         labelCPF = new javax.swing.JLabel();
@@ -59,6 +157,7 @@ public class FormCliente extends javax.swing.JFrame {
         botaoInserir = new javax.swing.JButton();
         botaoExcluir = new javax.swing.JButton();
         botaoEditar = new javax.swing.JButton();
+        botaoLimpar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -113,15 +212,19 @@ public class FormCliente extends javax.swing.JFrame {
         labelCPFPesquisa.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelCPFPesquisa.setText("CPF: ");
 
-        botaoPesquisar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoPesquisar.setText("PESQUISAR");
-
         try {
             campoCPFPesquisa.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
         campoCPFPesquisa.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        botaoPesquisar.setText("PESQUISAR");
+        botaoPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoPesquisarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelPesquisaLayout = new javax.swing.GroupLayout(painelPesquisa);
         painelPesquisa.setLayout(painelPesquisaLayout);
@@ -134,19 +237,19 @@ public class FormCliente extends javax.swing.JFrame {
                 .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addComponent(botaoPesquisar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         painelPesquisaLayout.setVerticalGroup(
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelPesquisaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botaoPesquisar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(labelSubtitulo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botaoPesquisar))
                 .addContainerGap())
         );
 
@@ -391,12 +494,37 @@ public class FormCliente extends javax.swing.JFrame {
 
         botaoInserir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         botaoInserir.setText("INSERIR");
+        botaoInserir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoInserirActionPerformed(evt);
+            }
+        });
 
         botaoExcluir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         botaoExcluir.setText("EXCLUIR");
+        botaoExcluir.setEnabled(false);
+        botaoExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoExcluirActionPerformed(evt);
+            }
+        });
 
         botaoEditar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         botaoEditar.setText("EDITAR");
+        botaoEditar.setEnabled(false);
+        botaoEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoEditarActionPerformed(evt);
+            }
+        });
+
+        botaoLimpar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        botaoLimpar.setText("LIMPAR");
+        botaoLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoLimparActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelAcaoLayout = new javax.swing.GroupLayout(painelAcao);
         painelAcao.setLayout(painelAcaoLayout);
@@ -404,18 +532,18 @@ public class FormCliente extends javax.swing.JFrame {
             painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelAcaoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(painelAcaoLayout.createSequentialGroup()
-                        .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(painelAcaoLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(botaoInserir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botaoEditar)
-                        .addGap(92, 92, 92)
-                        .addComponent(botaoExcluir)
-                        .addGap(17, 17, 17))))
+                .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelAcaoLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botaoInserir)
+                .addGap(18, 18, 18)
+                .addComponent(botaoEditar)
+                .addGap(18, 18, 18)
+                .addComponent(botaoExcluir)
+                .addGap(18, 18, 18)
+                .addComponent(botaoLimpar)
+                .addGap(41, 41, 41))
         );
         painelAcaoLayout.setVerticalGroup(
             painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -426,7 +554,8 @@ public class FormCliente extends javax.swing.JFrame {
                 .addGroup(painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botaoInserir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botaoExcluir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botaoEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botaoLimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -467,96 +596,71 @@ public class FormCliente extends javax.swing.JFrame {
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_botaoVoltarActionPerformed
-    
-    private boolean camposVazios() {
-        boolean verificacao = false;
-        if (campoNome.getText().equals("")
-                || campoRG.getText().equals("  -   .   .   ")
-                || campoCPF.getText().equals("  .  .   -  ")
-                || campoDataNascimento.getText().equals(" / / ")
-                || campoLogradouro.getText().equals("")
-                || campoNumero.getText().equals("")
-                || campoBairro.getText().equals("")
-                || campoComplemento.getText().equals("")
-                || campoSelecaoEstado.getSelectedIndex() == 0
-                || campoCidade.getText().equals("")
-                || campoTelefone.getText().equals("( )     -    ")
-                || campoEmail.getText().equals("")
-                || campoUsuario.getText().equals("")
-                || campoSenha.getText().equals("")) {
-            verificacao = true;
-        }
-        return (verificacao);
-    }
-/*
-    private void preencherClasse() {
-        c.setCodigoCliente(textoCodigoCliente.getText());
-        c.setNomeCliente(textoNome.getText());
-        c.setRgCliente(textoRg.getText());
-        c.setCpfCliente(textoCpf.getText());
-        c.setSexoCliente(caixaSexo.getSelectedItem().toString());
-        c.setDataNascimentoCliente(textoDataNascimento.getText());
-        c.setIdadeCliente(textoIdade.getText());
-        c.setEnderecoCliente(textoEndereco.getText());
-        c.setBairroCliente(textoBairro.getText());
-        c.setNumeroCliente(textoNumero.getText());
-        c.setEstadoCliente(caixaEstado.getSelectedItem().toString());
-        c.setCidadeCliente(caixaCidade.getSelectedItem().toString());
-        c.setTelefoneResidencialCliente(textoTelefone.getText());
-        c.setTelefoneCelularCliente(textoCelular.getText());
-        c.setEmailCliente(textoEmail.getText());
-    }
 
-    private void preencherCampos() {
-        textoNome.setText(c.getNomeCliente());
-        textoRg.setText(c.getRgCliente());
-        textoCpf.setText(c.getCpfCliente());
-        caixaSexo.setSelectedItem(c.getSexoCliente());
-        textoDataNascimento.setText(c.getDataNascimentoCliente());
-        textoIdade.setText(c.getIdadeCliente());
-        textoEndereco.setText(c.getEnderecoCliente());
-        textoBairro.setText(c.getBairroCliente());
-        textoNumero.setText(c.getNumeroCliente());
-        caixaEstado.setSelectedItem(c.getEstadoCliente());
-        caixaCidade.setSelectedItem(c.getCidadeCliente());
-        textoTelefone.setText(c.getTelefoneResidencialCliente());
-        textoCelular.setText(c.getTelefoneCelularCliente());
-        textoEmail.setText(c.getEmailCliente());
-    }
-
-    private void limpar() {
-        textoCodigoCliente.setValue(null);
-        textoNome.setText(null);
-        textoRg.setText(null);
-        textoCpf.setText(null);
-        caixaSexo.setSelectedIndex(0);
-        textoDataNascimento.setValue(null);
-        textoIdade.setText(null);
-        textoEndereco.setText(null);
-        textoBairro.setText(null);
-        textoNumero.setText(null);
-        caixaEstado.setSelectedIndex(0);
-        textoTelefone.setValue(null);
-        textoCelular.setValue(null);
-        textoEmail.setText(null);
-    }
-
-    private void padraoBotoes(boolean ativacao) {
-        if (ativacao == true) {
-            botaoPesquisar.setText("Cancelar");
-            botaoInserir.setEnabled(false);
-            botaoRemover.setEnabled(true);
-            botaoAlterar.setEnabled(true);
+    private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
+        if (!camposVazios()) {
+            preencherClasse();
+            clienteDAO.inserir(cliente);
+            JOptionPane.showMessageDialog(this, "Inserção feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limpar();
         } else {
-            botaoPesquisar.setText("Pesquisar");
-            botaoPesquisar.setSelected(false);
-            botaoInserir.setEnabled(true);
-            botaoRemover.setEnabled(false);
-            botaoAlterar.setEnabled(false);
+            JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_botaoInserirActionPerformed
+
+    private void botaoEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarActionPerformed
+        if (!camposVazios()) {
+            preencherClasse();
+            clienteDAO.atualizar(cliente);
+            JOptionPane.showMessageDialog(this, "Alteração feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            padraoBotoes(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        }        
+    }//GEN-LAST:event_botaoEditarActionPerformed
+
+    private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
+        if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
+            int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+            if (confirmacao == 0) {
+                clienteDAO.deletar(campoCPFPesquisa.getText());
+                JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                padraoBotoes(false);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "CPF do Cliente em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_botaoExcluirActionPerformed
+
+    private void botaoLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLimparActionPerformed
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Deseja limpar todos os campos?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+        if (confirmacao == 0) {
             limpar();
         }
-    }
-    */
+    }//GEN-LAST:event_botaoLimparActionPerformed
+
+    private void botaoPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarActionPerformed
+        if (botaoPesquisar.isSelected()) {
+            padraoBotoes(true);
+            if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
+                cliente = clienteDAO.pesquisar(campoCPFPesquisa.getText(), 0);
+                preencherCampos();
+                if (!campoNome.getText().equals("")) {
+                    padraoBotoes(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "CPF do Cliente inválido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                    padraoBotoes(false);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "CPF do Cliente em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                padraoBotoes(false);
+            }
+        } else {
+            padraoBotoes(false);
+        }
+    }//GEN-LAST:event_botaoPesquisarActionPerformed
+    
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -593,7 +697,8 @@ public class FormCliente extends javax.swing.JFrame {
     private javax.swing.JButton botaoEditar;
     private javax.swing.JButton botaoExcluir;
     private javax.swing.JButton botaoInserir;
-    private javax.swing.JButton botaoPesquisar;
+    private javax.swing.JButton botaoLimpar;
+    private javax.swing.JToggleButton botaoPesquisar;
     private javax.swing.JButton botaoVoltar;
     private javax.swing.JTextField campoBairro;
     private javax.swing.JFormattedTextField campoCPF;

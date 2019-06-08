@@ -1,6 +1,5 @@
 package br.inatel.alugacomigo.dao;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Connection;
@@ -9,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import br.inatel.alugacomigo.classes.*;
 import br.inatel.alugacomigo.conexaobd.ConexaoBD;
+import javax.swing.JOptionPane;
 
 public class PessoaDAO {
     
@@ -28,26 +28,25 @@ public class PessoaDAO {
         if(con != null){
             try {
         
-                sql = "insert into pessoa(cpf, rg, nome, data_nascimento, idade, endereco_logradouro, endereco_numero, "
+                sql = "insert into pessoa(cpf, rg, nome, data_nascimento, endereco_logradouro, endereco_numero, "
                         + "endereco_bairro, endereco_complemento, endereco_estado, endereco_cidade, telefone_celular, "
-                        + "email, usuario, senha) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                        + "email, usuario, senha) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
                 
                 pst = con.prepareStatement(sql);
                 pst.setString(1, novaPessoa.getCpf());
                 pst.setString(2, novaPessoa.getRg());
                 pst.setString(3, novaPessoa.getNome());
-                pst.setDate(4, (Date) novaPessoa.getDataNascimento());
-                pst.setInt(5, novaPessoa.getIdade());
-                pst.setString(6, novaPessoa.getEnderecoLogradouro());
-                pst.setInt(7, novaPessoa.getEnderecoNumero());
-                pst.setString(8, novaPessoa.getEnderecoBairro());
-                pst.setString(9, novaPessoa.getEnderecoComplemento());
-                pst.setString(10, novaPessoa.getEnderecoEstado());
-                pst.setString(11, novaPessoa.getEnderecoCidade());
-                pst.setString(12, novaPessoa.getTelefoneCelular());
-                pst.setString(13, novaPessoa.getEmail());
-                pst.setString(14, novaPessoa.getUsuario());
-                pst.setString(15, novaPessoa.getSenha());
+                pst.setString(4, novaPessoa.getDataNascimento());
+                pst.setString(5, novaPessoa.getEnderecoLogradouro());
+                pst.setInt(6, novaPessoa.getEnderecoNumero());
+                pst.setString(7, novaPessoa.getEnderecoBairro());
+                pst.setString(8, novaPessoa.getEnderecoComplemento());
+                pst.setString(9, novaPessoa.getEnderecoEstado());
+                pst.setString(10, novaPessoa.getEnderecoCidade());
+                pst.setString(11, novaPessoa.getTelefoneCelular());
+                pst.setString(12, novaPessoa.getEmail());
+                pst.setString(13, novaPessoa.getUsuario());
+                pst.setString(14, novaPessoa.getSenha());
                 pst.execute();
                 
                 if(novaPessoa instanceof Cliente){
@@ -137,16 +136,17 @@ public class PessoaDAO {
         try {
 
             sql = "select * from pessoa where cpf = ?;";
+            con = new ConexaoBD().getConexao();
             pst = con.prepareStatement(sql);
             pst.setString(1, cpf);
             rs = pst.executeQuery();
 
             while (rs.next()) {
+                System.out.println("ACHOU O REGISTRO NESSE CARALHO");
                 p.setCpf(rs.getString("cpf"));
                 p.setRg(rs.getString("rg"));
                 p.setNome(rs.getString("nome"));
-                p.setDataNascimento(rs.getDate("data_nascimento"));
-                p.setIdade(rs.getInt("idade"));
+                p.setDataNascimento(rs.getString("data_nascimento"));
                 p.setEnderecoLogradouro(rs.getString("endereco_logradouro"));
                 p.setEnderecoNumero(rs.getInt("endereco_numero"));
                 p.setEnderecoBairro(rs.getString("endereco_bairro"));
@@ -161,14 +161,17 @@ public class PessoaDAO {
             
             if(p instanceof Cliente){
                     
-                sql = "select * from cliente where cpf = ?;";
+                sql = "select * from cliente where pessoa_cpf = ?;";
 
+                con = new ConexaoBD().getConexao();
                 pst = con.prepareStatement(sql);
                 pst.setString(1, cpf);
-                rs = pst.executeQuery(sql);
+                rs = pst.executeQuery();
 
                 while (rs.next()) {
+                    System.out.println("ACHOU O REGISTRO NO OUTRO CARALHO");
                     ((Cliente) p).setPossuiPendencias(rs.getBoolean("possui_pendencias"));
+                    ((Cliente) p).setValorPendencias(rs.getFloat("possui_pendencias"));
                     ((Cliente) p).setQtdCarrosAlugados(rs.getInt("qtd_carros_alugados"));
                     ((Cliente) p).setTotalGasto(rs.getFloat("total_gasto"));
                     ((Cliente) p).setDescontoAtual(rs.getFloat("desconto_atual"));
@@ -178,6 +181,7 @@ public class PessoaDAO {
 
                 sql = "select * from funcionario where pessoa_cpf = ?;";
 
+                con = new ConexaoBD().getConexao();
                 pst = con.prepareStatement(sql);
                 pst.setString(1, cpf);
                 rs = pst.executeQuery();
@@ -196,6 +200,7 @@ public class PessoaDAO {
 
                 sql = "select * from gerente where pessoa_cpf = ?;";
 
+                con = new ConexaoBD().getConexao();
                 pst = con.prepareStatement(sql);
                 pst.setString(1, p.getCpf());
                 pst.execute();
@@ -226,6 +231,7 @@ public class PessoaDAO {
                 ((Gerente) p).setLojasGerenciadas(lojas);
             }
 
+            System.out.println("RETORNOU ESSA MERDA");
             pst.close();
             return p;
 
@@ -239,8 +245,9 @@ public class PessoaDAO {
         
         int idAux = 0;
         String sqlAux;
+        con = new ConexaoBD().getConexao();
         
-        String sql = "update pessoa set rg = ?, nome = ?, data_nascimento = ?, idade = ?, endereco_logradouro = ?, "
+        String sql = "update pessoa set rg = ?, nome = ?, data_nascimento = ?, endereco_logradouro = ?, "
                     + "endereco_numero = ?, endereco_bairro = ?, endereco_complemento = ?, endereco_estado = ?, "
                     + "endereco_cidade = ?, telefone_celular = ?, email = ?, usuario = ?, senha = ? where cpf = ?;";
         
@@ -248,27 +255,34 @@ public class PessoaDAO {
             pst = con.prepareStatement(sql);
             pst.setString(1, pessoa.getRg());
             pst.setString(2, pessoa.getNome());
-            pst.setDate(3, (Date) pessoa.getDataNascimento());
-            pst.setInt(4, pessoa.getIdade());
-            pst.setString(5, pessoa.getEnderecoLogradouro());
-            pst.setInt(6, pessoa.getEnderecoNumero());
-            pst.setString(7, pessoa.getEnderecoBairro());
-            pst.setString(8, pessoa.getEnderecoComplemento());
-            pst.setString(9, pessoa.getEnderecoEstado());
-            pst.setString(10, pessoa.getEnderecoCidade());
-            pst.setString(11, pessoa.getTelefoneCelular());
-            pst.setString(12, pessoa.getEmail());
-            pst.setString(13, pessoa.getUsuario());
-            pst.setString(14, pessoa.getSenha());
-            pst.setString(15, pessoa.getCpf());
+            pst.setString(3, pessoa.getDataNascimento());
+            pst.setString(4, pessoa.getEnderecoLogradouro());
+            pst.setInt(5, pessoa.getEnderecoNumero());
+            pst.setString(6, pessoa.getEnderecoBairro());
+            pst.setString(7, pessoa.getEnderecoComplemento());
+            pst.setString(8, pessoa.getEnderecoEstado());
+            pst.setString(9, pessoa.getEnderecoCidade());
+            pst.setString(10, pessoa.getTelefoneCelular());
+            pst.setString(11, pessoa.getEmail());
+            pst.setString(12, pessoa.getUsuario());
+            pst.setString(13, pessoa.getSenha());
+            pst.setString(14, pessoa.getCpf());
             pst.execute();
             
             if(pessoa instanceof Cliente){
                     
-                sql = "insert into cliente(pessoa_cpf) values (?);";
-
+                sql = "update cliente set possui_pendencias = ?, valor_pendencias = ?, qtd_carros_alugados = ?, total_gasto = ?, "
+                        + "desconto atual = ? where pessoa_cpf = ?;";
+                
+                Cliente auxC = (Cliente) pessoa;
+                
                 pst = con.prepareStatement(sql);
-                pst.setString(1, pessoa.getCpf());
+                pst.setBoolean(1, auxC.isPossuiPendencias());
+                pst.setFloat(2, auxC.getValorPendencias());
+                pst.setInt(3, auxC.getQtdCarrosAlugados());
+                pst.setFloat(4, auxC.getTotalGasto());
+                pst.setFloat(5, auxC.getDescontoAtual());
+                pst.setString(6, pessoa.getCpf());
                 pst.execute();
 
             }else if(pessoa instanceof Funcionario){
@@ -325,6 +339,7 @@ public class PessoaDAO {
     
     public boolean deletar(String cpf) {
         
+        con = new ConexaoBD().getConexao();
         String sql = "delete from pessoa where cpf = ?;";
         
         try {

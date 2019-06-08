@@ -1,14 +1,13 @@
 package br.inatel.alugacomigo.classes;
 
-import java.util.Date;
+import java.sql.Date;
 
 public abstract class Pessoa {
     
     private String cpf;
     private String rg;
     private String nome;
-    private Date dataNascimento;
-    private int idade;
+    private String dataNascimento;
     private String enderecoLogradouro;
     private int enderecoNumero;
     private String enderecoBairro;
@@ -44,20 +43,12 @@ public abstract class Pessoa {
         this.nome = nome;
     }
 
-    public Date getDataNascimento() {
+    public String getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(Date dataNascimento) {
+    public void setDataNascimento(String dataNascimento) {
         this.dataNascimento = dataNascimento;
-    }
-
-    public int getIdade() {
-        return idade;
-    }
-
-    public void setIdade(int idade) {
-        this.idade = idade;
     }
 
     public String getEnderecoLogradouro() {
