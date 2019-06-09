@@ -4,9 +4,9 @@ public class Funcionario extends Pessoa implements CalculaSalario {
     
     private int idFuncionario;
     private Loja loja;
-    private int qtdAlugeisRealizados;
     private float valorFaturado;
     private float salarioBase;
+    private String tipoFuncionario;
     private float bonus;
     
     @Override
@@ -31,14 +31,6 @@ public class Funcionario extends Pessoa implements CalculaSalario {
         this.loja = loja;
     }
 
-    public int getQtdAlugeisRealizados() {
-        return qtdAlugeisRealizados;
-    }
-
-    public void setQtdAlugeisRealizados(int qtdAlugeisRealizados) {
-        this.qtdAlugeisRealizados = qtdAlugeisRealizados;
-    }
-
     public float getValorFaturado() {
         return valorFaturado;
     }
@@ -55,6 +47,14 @@ public class Funcionario extends Pessoa implements CalculaSalario {
         this.salarioBase = salarioBase;
     }
 
+    public String getTipoFuncionario() {
+        return tipoFuncionario;
+    }
+
+    public void setTipoFuncionario(String tipoFuncionario) {
+        this.tipoFuncionario = tipoFuncionario;
+    }
+
     public float getBonus() {
         return bonus;
     }
@@ -62,5 +62,4 @@ public class Funcionario extends Pessoa implements CalculaSalario {
     public void setBonus(float bonus) {
         this.bonus = bonus;
     }
-    
 }

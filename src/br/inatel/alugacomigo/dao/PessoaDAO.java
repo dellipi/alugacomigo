@@ -59,7 +59,7 @@ public class PessoaDAO {
                     
                 }else if(novaPessoa instanceof Funcionario){
                     
-                    sql = "insert into pessoa(pessoa_cpf, loja_id_loja, salario_base) values (?,?,?);";
+                    sql = "insert into funcionario(pessoa_cpf, loja_id_loja, salario_base, tipo_funcionario) values (?,?,?,?);";
                     
                     Funcionario auxF = (Funcionario) novaPessoa;
                     
@@ -67,37 +67,9 @@ public class PessoaDAO {
                     pst.setString(1, novaPessoa.getCpf());
                     pst.setInt(2, auxF.getLoja().getIdLoja());
                     pst.setFloat(3, auxF.getSalarioBase());
+                    pst.setString(4, auxF.getTipoFuncionario());
                     pst.execute();
-                    
-                }else if(novaPessoa instanceof Gerente){
-                    
-                    sql = "insert into pessoa(cpf, qtd_funcionarios_gerenciados, salario_base) values (?,?,?);";
-
-                    Gerente auxG = (Gerente) novaPessoa; 
-                    Loja[] auxLojas = auxG.getLojasGerenciadas();
-                    
-                    pst = con.prepareStatement(sql);
-                    pst.setString(1, novaPessoa.getCpf());
-                    pst.setInt(2, auxG.getQtdFuncionariosGerenciados());
-                    pst.setFloat(3, auxG.getSalarioBase());
-                    pst.execute();
-                    
-                    sqlAux = "select * from gerente where pessoa_cpf = ?";
-                    pst = con.prepareStatement(sqlAux);
-                    pst.setString(1, novaPessoa.getCpf());
-                    rs = pst.executeQuery();
-
-                    while (rs.next()) {
-                        idAux = rs.getInt("id_gerente");
-                    }
-                    
-                    for (Loja auxLoja : auxLojas) {
-                        sqlAux = "insert into loja_has_gerente(loja_id_loja, gerente_id_gerente) values (?,?);";
-                        pst = con.prepareStatement(sqlAux);
-                        pst.setInt(1, idAux);
-                        pst.setInt(2, auxLoja.getIdLoja());
-                        pst.execute();
-                    }
+                
                 }
                 
                 success = true;
@@ -125,11 +97,8 @@ public class PessoaDAO {
             case 0:
                 p = new Cliente();
                 break;
-            case 1:
-                p = new Funcionario();
-                break;
             default:
-                p = new Gerente();
+                p = new Funcionario();
                 break;
         }
 
@@ -142,7 +111,6 @@ public class PessoaDAO {
             rs = pst.executeQuery();
 
             while (rs.next()) {
-                System.out.println("ACHOU O REGISTRO NESSE CARALHO");
                 p.setCpf(rs.getString("cpf"));
                 p.setRg(rs.getString("rg"));
                 p.setNome(rs.getString("nome"));
@@ -169,7 +137,6 @@ public class PessoaDAO {
                 rs = pst.executeQuery();
 
                 while (rs.next()) {
-                    System.out.println("ACHOU O REGISTRO NO OUTRO CARALHO");
                     ((Cliente) p).setPossuiPendencias(rs.getBoolean("possui_pendencias"));
                     ((Cliente) p).setValorPendencias(rs.getFloat("possui_pendencias"));
                     ((Cliente) p).setQtdCarrosAlugados(rs.getInt("qtd_carros_alugados"));
@@ -190,48 +157,14 @@ public class PessoaDAO {
                     ((Funcionario) p).setIdFuncionario(rs.getInt("id_funcionario"));
                     ((Funcionario) p).setValorFaturado(rs.getFloat("valor_faturado"));
                     ((Funcionario) p).setSalarioBase(rs.getFloat("salario_base"));
+                    ((Funcionario) p).setTipoFuncionario(rs.getString("tipo_funcionario"));
                     
                     idAux = rs.getInt("loja_id_loja");
                     loja = lojaDAO.pesquisar(idAux);
                     ((Funcionario) p).setLoja(loja);
                 }
-
-            }else if(p instanceof Gerente){
-
-                sql = "select * from gerente where pessoa_cpf = ?;";
-
-                con = new ConexaoBD().getConexao();
-                pst = con.prepareStatement(sql);
-                pst.setString(1, p.getCpf());
-                pst.execute();
-
-                while (rs.next()) {
-                    ((Gerente) p).setIdGerente(rs.getInt("id_gerente"));
-                    ((Gerente) p).setQtdFuncionariosGerenciados(rs.getInt("qtd_funcionarios_gerenciados"));
-                    ((Gerente) p).setSalarioBase(rs.getFloat("salario_base"));
-                }
-                
-                sqlAux = "select * from loja_has_gerente where gerente_id_gerente = ?;";
-                pst = con.prepareStatement(sqlAux);
-                pst.setInt(1, ((Gerente) p).getIdGerente());
-                pst.execute();
-                
-                while (rs.next()) {
-                    idAux = rs.getInt("loja_id_loja");
-                    loja = lojaDAO.pesquisar(idAux);
-                    
-                    for(int i = 0; i < lojas.length; i++) {
-                        if(lojas[i] == null){
-                            lojas[i] = loja;
-                            break;
-                        }
-                    }
-                }
-                
-                ((Gerente) p).setLojasGerenciadas(lojas);
             }
 
-            System.out.println("RETORNOU ESSA MERDA");
             pst.close();
             return p;
 
@@ -287,45 +220,19 @@ public class PessoaDAO {
 
             }else if(pessoa instanceof Funcionario){
 
-                sql = "insert into pessoa(pessoa_cpf, loja_id_loja, salario_base) values (?,?,?);";
-
+                sql = "update cliente set loja_id_loja = ?, valor_faturado = ?, salario_base = ?, tipo_funcionario = ?, "
+                        + "where pessoa_cpf = ?;";
+                
+                Cliente auxC = (Cliente) pessoa;
                 Funcionario auxF = (Funcionario) pessoa;
-
+                
                 pst = con.prepareStatement(sql);
-                pst.setString(1, pessoa.getCpf());
-                pst.setInt(2, auxF.getLoja().getIdLoja());
+                pst.setInt(1, auxF.getLoja().getIdLoja());
+                pst.setFloat(2, auxF.getValorFaturado());
                 pst.setFloat(3, auxF.getSalarioBase());
+                pst.setString(4, auxF.getTipoFuncionario());
+                pst.setString(5, pessoa.getCpf());
                 pst.execute();
-
-            }else if(pessoa instanceof Gerente){
-
-                sql = "insert into pessoa(cpf, qtd_funcionarios_gerenciados, salario_base) values (?,?,?);";
-
-                Gerente auxG = (Gerente) pessoa; 
-                Loja[] auxLojas = auxG.getLojasGerenciadas();
-
-                pst = con.prepareStatement(sql);
-                pst.setString(1, pessoa.getCpf());
-                pst.setInt(2, auxG.getQtdFuncionariosGerenciados());
-                pst.setFloat(3, auxG.getSalarioBase());
-                pst.execute();
-
-                sqlAux = "select * from gerente where pessoa_cpf = ?";
-                pst = con.prepareStatement(sqlAux);
-                pst.setString(1, pessoa.getCpf());
-                rs = pst.executeQuery();
-
-                while (rs.next()) {
-                    idAux = rs.getInt("id_gerente");
-                }
-
-                for (Loja auxLoja : auxLojas) {
-                    sqlAux = "insert into loja_has_gerente(loja_id_loja, gerente_id_gerente) values (?,?);";
-                    pst = con.prepareStatement(sqlAux);
-                    pst.setInt(1, idAux);
-                    pst.setInt(2, auxLoja.getIdLoja());
-                    pst.execute();
-                }
             }
             
             success = true;

@@ -13,7 +13,6 @@ public class Loja {
     private String telefoneContato;
     private String emailContato;
     private int numFuncionarios;
-    private Gerente[] gerentes;
     private Funcionario[] funcionarios;
 
     public int getIdLoja() {
@@ -102,14 +101,6 @@ public class Loja {
 
     public void setNumFuncionarios(int numFuncionarios) {
         this.numFuncionarios = numFuncionarios;
-    }
-
-    public Gerente[] getGerentes() {
-        return gerentes;
-    }
-
-    public void setGerentes(Gerente[] gerentes) {
-        this.gerentes = gerentes;
     }
 
     public Funcionario[] getFuncionarios() {

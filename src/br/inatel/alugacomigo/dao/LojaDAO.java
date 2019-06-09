@@ -61,10 +61,8 @@ public class LojaDAO {
         String cpfAux;
         Loja loja = new Loja();
         
-        Gerente gerente = new Gerente();
         Funcionario funcionario = new Funcionario();
         PessoaDAO pessoaDAO = new PessoaDAO();
-        Gerente[] gerentes = new Gerente[100];
         Funcionario[] funcionarios = new Funcionario[100];
 
         try {
@@ -87,32 +85,6 @@ public class LojaDAO {
                 loja.setEmailContato(rs.getString("email_contato"));
                 loja.setNumFuncionarios(rs.getInt("num_funcionario"));
             }
-                    
-            sql = "select * from loja_has_gerente where loja_id_loja = ?";
-            pst = con.prepareStatement(sql);
-            pst.setInt(1, idLoja);
-            rs = pst.executeQuery(sql);
-            
-            while(rs.next()){
-                auxID = rs.getInt("gerente_id_gerente");
-                
-                sql = "select * from gerente where id_gerente = ?";
-                pst = con.prepareStatement(sql);
-                pst.setInt(1, auxID);
-                rs = pst.executeQuery(sql);
-                
-                while(rs.next()){
-                    cpfAux = rs.getString("pessoa_cpf");
-                    gerente = (Gerente) pessoaDAO.pesquisar(cpfAux, 2);
-                }
-                
-                for(int i = 0; i < gerentes.length; i++) {
-                    if(gerentes[i] == null){
-                        gerentes[i] = gerente;
-                        break;
-                    }                    
-                }
-            }
             
             sql = "select * from funcionario where loja_id_loja = ?";
             pst = con.prepareStatement(sql);
@@ -133,11 +105,79 @@ public class LojaDAO {
                 }
             }
             
-            loja.setGerentes(gerentes);
             loja.setFuncionarios(funcionarios);
             
             pst.close();
             return loja;
+
+        } catch (SQLException u) {
+            throw new RuntimeException(u);
+        }
+    }
+    
+    public Loja[] pesquisarTodas() {
+
+        int auxID;
+        String sql;
+        String sqlAux;
+        String cpfAux;
+        Loja[] lojas = new Loja[100];
+        Loja loja;
+        
+        Funcionario funcionario = new Funcionario();
+        PessoaDAO pessoaDAO = new PessoaDAO();
+        Funcionario[] funcionarios = new Funcionario[100];
+
+        try {
+
+            sql = "select * from loja;";
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                loja = new Loja();
+                loja.setIdLoja(rs.getInt("id_loja"));
+                loja.setNome(rs.getString("nome"));
+                loja.setEnderecoLogradouro(rs.getString("endereco_logradouro"));
+                loja.setEnderecoNumero(rs.getInt("endereco_numero"));
+                loja.setEnderecoBairro(rs.getString("endereco_bairro"));
+                loja.setEnderecoComplemento(rs.getString("endereco_complemento"));
+                loja.setEnderecoEstado(rs.getString("endereco_estado"));
+                loja.setEnderecoCidade(rs.getString("endereco_cidade"));
+                loja.setTelefoneContato(rs.getString("telefone_contato"));
+                loja.setEmailContato(rs.getString("email_contato"));
+                loja.setNumFuncionarios(rs.getInt("num_funcionario"));
+                
+                sql = "select * from funcionario where loja_id_loja = ?";
+                pst = con.prepareStatement(sql);
+                pst.setInt(1, loja.getIdLoja());
+                rs = pst.executeQuery(sql);
+
+                while(rs.next()){
+                    auxID = rs.getInt("id_funcionario");
+                    cpfAux = rs.getString("pessoa_cpf");
+
+                    funcionario = (Funcionario) pessoaDAO.pesquisar(cpfAux, 1);
+
+                    for(int i = 0; i < funcionarios.length; i++) {
+                        if(funcionarios[i] == null){
+                            funcionarios[i] = funcionario;
+                            break;
+                        }                    
+                    }
+                }
+
+                loja.setFuncionarios(funcionarios);
+                
+                for(int i = 0; i < lojas.length; i++) {
+                    if(lojas[i] == null){
+                        lojas[i] = loja;
+                    }
+                }
+            }
+                    
+            pst.close();
+            return lojas;
 
         } catch (SQLException u) {
             throw new RuntimeException(u);
