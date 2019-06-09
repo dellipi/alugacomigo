@@ -87,8 +87,7 @@ public class LojaDAO {
                 loja.setNumFuncionarios(rs.getInt("num_funcionario"));
             }
             
-            con = new ConexaoBD().getConexao();
-            
+            /*
             sql = "select * from funcionario where loja_id_loja = ?";
             pst = con.prepareStatement(sql);
             pst.setInt(1, idLoja);
@@ -109,7 +108,7 @@ public class LojaDAO {
             }
             
             loja.setFuncionarios(funcionarios);
-            
+            */
             pst.close();
             return loja;
 

@@ -93,6 +93,8 @@ public class PessoaDAO {
         Loja[] lojas = new Loja[100];
         LojaDAO lojaDAO = new LojaDAO();
         
+        con = new ConexaoBD().getConexao();
+        
         switch (tipoPessoa) {
             case 0:
                 p = new Cliente();
@@ -105,7 +107,6 @@ public class PessoaDAO {
         try {
 
             sql = "select * from pessoa where cpf = ?;";
-            con = new ConexaoBD().getConexao();
             pst = con.prepareStatement(sql);
             pst.setString(1, cpf);
             rs = pst.executeQuery();
@@ -131,7 +132,6 @@ public class PessoaDAO {
                     
                 sql = "select * from cliente where pessoa_cpf = ?;";
 
-                con = new ConexaoBD().getConexao();
                 pst = con.prepareStatement(sql);
                 pst.setString(1, cpf);
                 rs = pst.executeQuery();
@@ -148,7 +148,6 @@ public class PessoaDAO {
 
                 sql = "select * from funcionario where pessoa_cpf = ?;";
 
-                con = new ConexaoBD().getConexao();
                 pst = con.prepareStatement(sql);
                 pst.setString(1, cpf);
                 rs = pst.executeQuery();
