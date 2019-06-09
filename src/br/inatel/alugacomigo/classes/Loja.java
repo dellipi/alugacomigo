@@ -96,6 +96,15 @@ public class Loja {
     }
 
     public int getNumFuncionarios() {
+        
+        this.numFuncionarios = 0;
+        
+        for(int i = 0; i < funcionarios.length; i++) {
+            if(funcionarios[i] != null){
+                this.numFuncionarios++;
+            }
+        }
+        
         return numFuncionarios;
     }
 

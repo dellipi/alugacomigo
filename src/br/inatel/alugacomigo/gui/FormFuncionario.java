@@ -9,11 +9,24 @@ import javax.swing.JOptionPane;
 
 public class FormFuncionario extends javax.swing.JFrame {
     
-    Pessoa cliente = new Cliente();
-    PessoaDAO clienteDAO = new PessoaDAO();
+    Pessoa funcionario = new Funcionario();
+    PessoaDAO funcionarioDAO = new PessoaDAO();
+    Loja[] lojas = new Loja[100];
+    LojaDAO lojaDAO = new LojaDAO();
     
     public FormFuncionario() {
         initComponents();
+    }
+    
+    private void preencherLojas() {
+        lojas = lojaDAO.pesquisarTodas();
+        campoSelecaoLoja.removeAllItems();
+        campoSelecaoLoja.addItem("Selecione:");
+        for(int i = 0; i < lojas.length; i++) {
+            if(lojas[i] != null){
+                campoSelecaoLoja.addItem(lojas[i].getNome());
+            }
+        }
     }
     
     private boolean camposVazios() {
@@ -38,37 +51,45 @@ public class FormFuncionario extends javax.swing.JFrame {
     }
 
     private void preencherClasse(){
-        cliente.setNome(campoNome.getText());
-        cliente.setRg(campoRG.getText());
-        cliente.setCpf(campoCPF.getText());
-        cliente.setDataNascimento(campoDataNascimento.getText());
-        cliente.setEnderecoLogradouro(campoLogradouro.getText());
-        cliente.setEnderecoBairro(campoBairro.getText());
-        cliente.setEnderecoNumero(Integer.parseInt(campoNumero.getText()));
-        cliente.setEnderecoComplemento(campoComplemento.getText());
-        cliente.setEnderecoEstado(campoSelecaoEstado.getSelectedItem().toString());
-        cliente.setEnderecoCidade(campoCidade.getText());
-        cliente.setTelefoneCelular(campoTelefone.getText());
-        cliente.setEmail(campoEmail.getText());
-        cliente.setUsuario(campoTelefone.getText());
-        cliente.setSenha(campoSenha.getText());
+        funcionario.setNome(campoNome.getText());
+        funcionario.setRg(campoRG.getText());
+        funcionario.setCpf(campoCPF.getText());
+        funcionario.setDataNascimento(campoDataNascimento.getText());
+        funcionario.setEnderecoLogradouro(campoLogradouro.getText());
+        funcionario.setEnderecoBairro(campoBairro.getText());
+        funcionario.setEnderecoNumero(Integer.parseInt(campoNumero.getText()));
+        funcionario.setEnderecoComplemento(campoComplemento.getText());
+        funcionario.setEnderecoEstado(campoSelecaoEstado.getSelectedItem().toString());
+        funcionario.setEnderecoCidade(campoCidade.getText());
+        funcionario.setTelefoneCelular(campoTelefone.getText());
+        funcionario.setEmail(campoEmail.getText());
+        funcionario.setUsuario(campoTelefone.getText());
+        funcionario.setSenha(campoSenha.getText());
+        ((Funcionario) funcionario).setSalarioBase(Float.parseFloat(campoSalario.getText()));
+        ((Funcionario) funcionario).setLoja(lojaDAO.pesquisar(lojaDAO.pesquisarId(campoSelecaoLoja.getSelectedItem().toString())));
+        ((Funcionario) funcionario).setTipoFuncionario(campoSelecaoFuncionario.getSelectedItem().toString());
     }
 
     private void preencherCampos() {
-        campoNome.setText(cliente.getNome());
-        campoRG.setText(cliente.getRg());
-        campoCPF.setText(cliente.getCpf());
-        campoDataNascimento.setText(cliente.getDataNascimento());
-        campoLogradouro.setText(cliente.getEnderecoLogradouro());
-        campoBairro.setText(cliente.getEnderecoBairro());
-        campoNumero.setText(String.valueOf(cliente.getEnderecoNumero()));
-        campoComplemento.setText(cliente.getEnderecoComplemento());
-        campoSelecaoEstado.setSelectedItem(cliente.getEnderecoEstado());
-        campoCidade.setText(cliente.getEnderecoCidade());
-        campoTelefone.setText(cliente.getTelefoneCelular());
-        campoEmail.setText(cliente.getEmail());
-        campoUsuario.setText(cliente.getUsuario());
-        campoSenha.setText(cliente.getSenha());
+        campoNome.setText(funcionario.getNome());
+        campoRG.setText(funcionario.getRg());
+        campoCPF.setText(funcionario.getCpf());
+        campoDataNascimento.setText(funcionario.getDataNascimento());
+        campoLogradouro.setText(funcionario.getEnderecoLogradouro());
+        campoBairro.setText(funcionario.getEnderecoBairro());
+        campoNumero.setText(String.valueOf(funcionario.getEnderecoNumero()));
+        campoComplemento.setText(funcionario.getEnderecoComplemento());
+        campoSelecaoEstado.setSelectedItem(funcionario.getEnderecoEstado());
+        campoCidade.setText(funcionario.getEnderecoCidade());
+        campoTelefone.setText(funcionario.getTelefoneCelular());
+        campoEmail.setText(funcionario.getEmail());
+        campoUsuario.setText(funcionario.getUsuario());
+        campoSenha.setText(funcionario.getSenha());
+        campoSelecaoLoja.setSelectedItem(((Funcionario) funcionario).getLoja().getNome());
+        campoSelecaoFuncionario.setSelectedItem(((Funcionario) funcionario).getTipoFuncionario());
+        campoSalario.setText(String.valueOf(((Funcionario) funcionario).getSalarioBase()));
+        campoValorFaturado.setText(String.valueOf(((Funcionario) funcionario).getValorFaturado()));
+        campoSalarioTotal.setText(String.valueOf(((Funcionario) funcionario).getSalarioTotal()));
     }
 
     private void limpar() {
@@ -87,6 +108,11 @@ public class FormFuncionario extends javax.swing.JFrame {
         campoEmail.setText(null);
         campoUsuario.setText(null);
         campoSenha.setText(null);
+        campoSelecaoLoja.setSelectedIndex(0);
+        campoSelecaoFuncionario.setSelectedIndex(0);
+        campoSalario.setText(null);
+        campoValorFaturado.setText(null);
+        campoSalarioTotal.setText(null);
     }
 
     private void padraoBotoes(boolean ativacao) {
@@ -128,10 +154,6 @@ public class FormFuncionario extends javax.swing.JFrame {
         labelCPF = new javax.swing.JLabel();
         labelRG = new javax.swing.JLabel();
         labelDataNascimento = new javax.swing.JLabel();
-        campoNome = new javax.swing.JTextField();
-        campoCPF = new javax.swing.JFormattedTextField();
-        campoRG = new javax.swing.JFormattedTextField();
-        campoDataNascimento = new javax.swing.JFormattedTextField();
         labelLogradouro = new javax.swing.JLabel();
         labelNumero = new javax.swing.JLabel();
         labelBairro = new javax.swing.JLabel();
@@ -142,21 +164,35 @@ public class FormFuncionario extends javax.swing.JFrame {
         labelEmail = new javax.swing.JLabel();
         labelUsuario = new javax.swing.JLabel();
         labelSenha = new javax.swing.JLabel();
-        campoTelefone = new javax.swing.JFormattedTextField();
-        campoNumero = new javax.swing.JTextField();
+        labelLoja = new javax.swing.JLabel();
+        labelTipoFuncionario = new javax.swing.JLabel();
+        labelSalarioBase = new javax.swing.JLabel();
+        labelValorFaturado = new javax.swing.JLabel();
+        labelSalarioTotal = new javax.swing.JLabel();
+        campoNome = new javax.swing.JTextField();
+        campoCPF = new javax.swing.JFormattedTextField();
+        campoRG = new javax.swing.JFormattedTextField();
+        campoDataNascimento = new javax.swing.JFormattedTextField();
         campoLogradouro = new javax.swing.JTextField();
+        campoNumero = new javax.swing.JTextField();
         campoBairro = new javax.swing.JTextField();
         campoComplemento = new javax.swing.JTextField();
-        campoCidade = new javax.swing.JTextField();
         campoSelecaoEstado = new javax.swing.JComboBox<>();
+        campoCidade = new javax.swing.JTextField();
+        campoTelefone = new javax.swing.JFormattedTextField();
         campoEmail = new javax.swing.JTextField();
         campoUsuario = new javax.swing.JTextField();
         campoSenha = new javax.swing.JPasswordField();
+        campoSelecaoLoja = new javax.swing.JComboBox<>();
+        campoSelecaoFuncionario = new javax.swing.JComboBox<>();
+        campoSalario = new javax.swing.JTextField();
+        campoValorFaturado = new javax.swing.JTextField();
+        campoSalarioTotal = new javax.swing.JTextField();
         painelAcao = new javax.swing.JPanel();
         labelSubtitulo2 = new javax.swing.JLabel();
         botaoInserir = new javax.swing.JButton();
-        botaoExcluir = new javax.swing.JButton();
         botaoEditar = new javax.swing.JButton();
+        botaoExcluir = new javax.swing.JButton();
         botaoLimpar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -179,7 +215,7 @@ public class FormFuncionario extends javax.swing.JFrame {
 
         labelTitulo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         labelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelTitulo.setText("CLIENTE");
+        labelTitulo.setText("Funcionário");
 
         javax.swing.GroupLayout panelTituloLayout = new javax.swing.GroupLayout(panelTitulo);
         panelTitulo.setLayout(panelTituloLayout);
@@ -206,7 +242,7 @@ public class FormFuncionario extends javax.swing.JFrame {
 
         labelSubtitulo1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelSubtitulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelSubtitulo1.setText("Pesquisar Cliente");
+        labelSubtitulo1.setText("Pesquisar Funcionário");
 
         labelCPFPesquisa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelCPFPesquisa.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -232,12 +268,12 @@ public class FormFuncionario extends javax.swing.JFrame {
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelPesquisaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelSubtitulo1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(labelSubtitulo1)
+                .addGap(118, 118, 118)
                 .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(botaoPesquisar)
                 .addContainerGap())
         );
@@ -270,29 +306,6 @@ public class FormFuncionario extends javax.swing.JFrame {
         labelDataNascimento.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelDataNascimento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelDataNascimento.setText("Data de Nascimento: ");
-
-        campoNome.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoCPF.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoCPF.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoRG.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("UU-###.###.###")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoRG.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoDataNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoDataNascimento.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         labelLogradouro.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelLogradouro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -334,6 +347,62 @@ public class FormFuncionario extends javax.swing.JFrame {
         labelSenha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelSenha.setText("Senha:");
 
+        labelLoja.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelLoja.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelLoja.setText("Loja:");
+
+        labelTipoFuncionario.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelTipoFuncionario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelTipoFuncionario.setText("Tipo de Funcionário:");
+
+        labelSalarioBase.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelSalarioBase.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelSalarioBase.setText("Salário Base:");
+
+        labelValorFaturado.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelValorFaturado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelValorFaturado.setText("Valor Faturado: ");
+
+        labelSalarioTotal.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelSalarioTotal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelSalarioTotal.setText("Salário Total:");
+
+        campoNome.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        try {
+            campoCPF.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        campoCPF.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        try {
+            campoRG.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("UU-###.###.###")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        campoRG.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        try {
+            campoDataNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
+        } catch (java.text.ParseException ex) {
+            ex.printStackTrace();
+        }
+        campoDataNascimento.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoLogradouro.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoNumero.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoBairro.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoComplemento.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoSelecaoEstado.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        campoSelecaoEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione:", "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará ", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins" }));
+
+        campoCidade.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
         try {
             campoTelefone.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##) #####-####")));
         } catch (java.text.ParseException ex) {
@@ -341,22 +410,23 @@ public class FormFuncionario extends javax.swing.JFrame {
         }
         campoTelefone.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
-        campoNumero.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        campoLogradouro.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        campoBairro.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        campoComplemento.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        campoCidade.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        campoSelecaoEstado.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        campoSelecaoEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione:", "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará ", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins" }));
-
         campoEmail.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         campoUsuario.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoSelecaoLoja.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        campoSelecaoLoja.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione:" }));
+
+        campoSelecaoFuncionario.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        campoSelecaoFuncionario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione:", "Gerente", "Serviços", "Vendedor(a)" }));
+
+        campoSalario.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        campoValorFaturado.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoValorFaturado.setEnabled(false);
+
+        campoSalarioTotal.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoSalarioTotal.setEnabled(false);
 
         javax.swing.GroupLayout painelFormularioLayout = new javax.swing.GroupLayout(painelFormulario);
         painelFormulario.setLayout(painelFormularioLayout);
@@ -364,65 +434,95 @@ public class FormFuncionario extends javax.swing.JFrame {
             painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelFormularioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelNome, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoNome, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
-                            .addComponent(labelCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(campoCPF))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
-                            .addComponent(labelRG, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(campoRG, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelBairro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoBairro, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelComplemento, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoComplemento, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoSelecaoEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelCidade, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoCidade, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelFormularioLayout.createSequentialGroup()
                         .addComponent(labelEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(campoEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoSenha)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(painelFormularioLayout.createSequentialGroup()
+                                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(labelNumero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelNome, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoNome, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(painelFormularioLayout.createSequentialGroup()
+                                .addComponent(labelEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoSelecaoEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(labelCidade, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoCidade))
+                            .addGroup(painelFormularioLayout.createSequentialGroup()
+                                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(labelRG, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoRG, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(labelDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
+                                            .addComponent(labelBairro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(campoBairro))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
+                                            .addComponent(labelComplemento, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(campoComplemento, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelLoja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(531, 531, 531))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelSalarioBase, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoSalario, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelValorFaturado, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoValorFaturado, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelSalarioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoSalarioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelTipoFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoSelecaoFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(painelFormularioLayout.createSequentialGroup()
+                                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(campoSelecaoLoja, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
+                                        .addComponent(labelUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(campoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(31, 31, 31)
+                                .addComponent(labelSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoSenha)))
+                        .addContainerGap())))
         );
         painelFormularioLayout.setVerticalGroup(
             painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -434,21 +534,15 @@ public class FormFuncionario extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelCPF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelDataNascimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelRG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(campoRG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelDataNascimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelLogradouro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoLogradouro))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoLogradouro)
                     .addComponent(labelNumero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(campoNumero))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -462,9 +556,7 @@ public class FormFuncionario extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelEstado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoSelecaoEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoSelecaoEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelCidade, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(campoCidade))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -478,12 +570,30 @@ public class FormFuncionario extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoUsuario))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoUsuario)
                     .addComponent(labelSenha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(campoSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(72, 72, 72))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelLoja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoSelecaoLoja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelTipoFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoSelecaoFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelSalarioBase, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoSalario))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelValorFaturado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoValorFaturado))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelSalarioTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoSalarioTotal))
+                .addGap(7, 7, 7))
         );
 
         painelAcao.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 3, true));
@@ -500,21 +610,21 @@ public class FormFuncionario extends javax.swing.JFrame {
             }
         });
 
-        botaoExcluir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoExcluir.setText("EXCLUIR");
-        botaoExcluir.setEnabled(false);
-        botaoExcluir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoExcluirActionPerformed(evt);
-            }
-        });
-
         botaoEditar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         botaoEditar.setText("EDITAR");
         botaoEditar.setEnabled(false);
         botaoEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botaoEditarActionPerformed(evt);
+            }
+        });
+
+        botaoExcluir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        botaoExcluir.setText("EXCLUIR");
+        botaoExcluir.setEnabled(false);
+        botaoExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoExcluirActionPerformed(evt);
             }
         });
 
@@ -543,7 +653,7 @@ public class FormFuncionario extends javax.swing.JFrame {
                 .addComponent(botaoExcluir)
                 .addGap(18, 18, 18)
                 .addComponent(botaoLimpar)
-                .addGap(41, 41, 41))
+                .addGap(148, 148, 148))
         );
         painelAcaoLayout.setVerticalGroup(
             painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -566,10 +676,12 @@ public class FormFuncionario extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painelFormulario, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(painelPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(painelAcao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(painelAcao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(painelFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -580,7 +692,7 @@ public class FormFuncionario extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painelPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(painelFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(painelFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painelAcao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -591,6 +703,7 @@ public class FormFuncionario extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         this.setLocationRelativeTo(null);
+        preencherLojas();
     }//GEN-LAST:event_formWindowOpened
 
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
@@ -600,7 +713,7 @@ public class FormFuncionario extends javax.swing.JFrame {
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
         if (!camposVazios()) {
             preencherClasse();
-            clienteDAO.inserir(cliente);
+            funcionarioDAO.inserir(funcionario);
             JOptionPane.showMessageDialog(this, "Inserção feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limpar();
         } else {
@@ -611,7 +724,7 @@ public class FormFuncionario extends javax.swing.JFrame {
     private void botaoEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarActionPerformed
         if (!camposVazios()) {
             preencherClasse();
-            clienteDAO.atualizar(cliente);
+            funcionarioDAO.atualizar(funcionario);
             JOptionPane.showMessageDialog(this, "Alteração feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             padraoBotoes(false);
         } else {
@@ -623,12 +736,12 @@ public class FormFuncionario extends javax.swing.JFrame {
         if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
             int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
             if (confirmacao == 0) {
-                clienteDAO.deletar(campoCPFPesquisa.getText());
-                JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                funcionarioDAO.deletar(campoCPFPesquisa.getText());
+                JOptionPane.showMessageDialog(this, "Funcionario deletado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 padraoBotoes(false);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "CPF do Cliente em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "CPF do Funcionario em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_botaoExcluirActionPerformed
 
@@ -643,16 +756,16 @@ public class FormFuncionario extends javax.swing.JFrame {
         if (botaoPesquisar.isSelected()) {
             padraoBotoes(true);
             if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
-                cliente = clienteDAO.pesquisar(campoCPFPesquisa.getText(), 0);
+                funcionario = funcionarioDAO.pesquisar(campoCPFPesquisa.getText(), 1);
                 preencherCampos();
                 if (!campoNome.getText().equals("")) {
                     padraoBotoes(true);
                 } else {
-                    JOptionPane.showMessageDialog(this, "CPF do Cliente inválido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "CPF do Funcionario inválido!", "Erro!", JOptionPane.ERROR_MESSAGE);
                     padraoBotoes(false);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "CPF do Cliente em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "CPF do Funcionario em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
                 padraoBotoes(false);
             }
         } else {
@@ -712,10 +825,15 @@ public class FormFuncionario extends javax.swing.JFrame {
     private javax.swing.JTextField campoNome;
     private javax.swing.JTextField campoNumero;
     private javax.swing.JFormattedTextField campoRG;
+    private javax.swing.JTextField campoSalario;
+    private javax.swing.JTextField campoSalarioTotal;
     private javax.swing.JComboBox<String> campoSelecaoEstado;
+    private javax.swing.JComboBox<String> campoSelecaoFuncionario;
+    private javax.swing.JComboBox<String> campoSelecaoLoja;
     private javax.swing.JPasswordField campoSenha;
     private javax.swing.JFormattedTextField campoTelefone;
     private javax.swing.JTextField campoUsuario;
+    private javax.swing.JTextField campoValorFaturado;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel labelBairro;
     private javax.swing.JLabel labelCPF;
@@ -726,15 +844,20 @@ public class FormFuncionario extends javax.swing.JFrame {
     private javax.swing.JLabel labelEmail;
     private javax.swing.JLabel labelEstado;
     private javax.swing.JLabel labelLogradouro;
+    private javax.swing.JLabel labelLoja;
     private javax.swing.JLabel labelNome;
     private javax.swing.JLabel labelNumero;
     private javax.swing.JLabel labelRG;
+    private javax.swing.JLabel labelSalarioBase;
+    private javax.swing.JLabel labelSalarioTotal;
     private javax.swing.JLabel labelSenha;
     private javax.swing.JLabel labelSubtitulo1;
     private javax.swing.JLabel labelSubtitulo2;
     private javax.swing.JLabel labelTelefone;
+    private javax.swing.JLabel labelTipoFuncionario;
     private javax.swing.JLabel labelTitulo;
     private javax.swing.JLabel labelUsuario;
+    private javax.swing.JLabel labelValorFaturado;
     private javax.swing.JPanel painelAcao;
     private javax.swing.JPanel painelFormulario;
     private javax.swing.JPanel painelPesquisa;

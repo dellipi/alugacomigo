@@ -9,8 +9,9 @@ import javax.swing.JOptionPane;
 
 public class FormLoja extends javax.swing.JFrame {
     
-    Pessoa cliente = new Cliente();
-    PessoaDAO clienteDAO = new PessoaDAO();
+    Loja loja = new Loja();
+    LojaDAO lojaDAO = new LojaDAO();
+    PessoaDAO pessoaDAO = new PessoaDAO();
     
     public FormLoja() {
         initComponents();
@@ -19,9 +20,6 @@ public class FormLoja extends javax.swing.JFrame {
     private boolean camposVazios() {
         boolean verificacao = false;
         if (campoNome.getText().equals("")
-                || campoRG.getText().equals("  -   .   .   ")
-                || campoCPF.getText().equals("   .   .   -  ")
-                || campoDataNascimento.getText().equals(" / / ")
                 || campoLogradouro.getText().equals("")
                 || campoNumero.getText().equals("")
                 || campoBairro.getText().equals("")
@@ -29,54 +27,40 @@ public class FormLoja extends javax.swing.JFrame {
                 || campoSelecaoEstado.getSelectedIndex() == 0
                 || campoCidade.getText().equals("")
                 || campoTelefone.getText().equals("( )     -    ")
-                || campoEmail.getText().equals("")
-                || campoUsuario.getText().equals("")
-                || campoSenha.getText().equals("")) {
+                || campoEmail.getText().equals("")) {
             verificacao = true;
         }
         return (verificacao);
     }
 
     private void preencherClasse(){
-        cliente.setNome(campoNome.getText());
-        cliente.setRg(campoRG.getText());
-        cliente.setCpf(campoCPF.getText());
-        cliente.setDataNascimento(campoDataNascimento.getText());
-        cliente.setEnderecoLogradouro(campoLogradouro.getText());
-        cliente.setEnderecoBairro(campoBairro.getText());
-        cliente.setEnderecoNumero(Integer.parseInt(campoNumero.getText()));
-        cliente.setEnderecoComplemento(campoComplemento.getText());
-        cliente.setEnderecoEstado(campoSelecaoEstado.getSelectedItem().toString());
-        cliente.setEnderecoCidade(campoCidade.getText());
-        cliente.setTelefoneCelular(campoTelefone.getText());
-        cliente.setEmail(campoEmail.getText());
-        cliente.setUsuario(campoTelefone.getText());
-        cliente.setSenha(campoSenha.getText());
+        loja.setNome(campoNome.getText());
+        loja.setEnderecoLogradouro(campoLogradouro.getText());
+        loja.setEnderecoBairro(campoBairro.getText());
+        loja.setEnderecoNumero(Integer.parseInt(campoNumero.getText()));
+        loja.setEnderecoComplemento(campoComplemento.getText());
+        loja.setEnderecoEstado(campoSelecaoEstado.getSelectedItem().toString());
+        loja.setEnderecoCidade(campoCidade.getText());
+        loja.setTelefoneContato(campoTelefone.getText());
+        loja.setEmailContato(campoEmail.getText());
     }
 
     private void preencherCampos() {
-        campoNome.setText(cliente.getNome());
-        campoRG.setText(cliente.getRg());
-        campoCPF.setText(cliente.getCpf());
-        campoDataNascimento.setText(cliente.getDataNascimento());
-        campoLogradouro.setText(cliente.getEnderecoLogradouro());
-        campoBairro.setText(cliente.getEnderecoBairro());
-        campoNumero.setText(String.valueOf(cliente.getEnderecoNumero()));
-        campoComplemento.setText(cliente.getEnderecoComplemento());
-        campoSelecaoEstado.setSelectedItem(cliente.getEnderecoEstado());
-        campoCidade.setText(cliente.getEnderecoCidade());
-        campoTelefone.setText(cliente.getTelefoneCelular());
-        campoEmail.setText(cliente.getEmail());
-        campoUsuario.setText(cliente.getUsuario());
-        campoSenha.setText(cliente.getSenha());
+        campoNome.setText(loja.getNome());
+        campoLogradouro.setText(loja.getEnderecoLogradouro());
+        campoBairro.setText(loja.getEnderecoBairro());
+        campoNumero.setText(String.valueOf(loja.getEnderecoNumero()));
+        campoComplemento.setText(loja.getEnderecoComplemento());
+        campoSelecaoEstado.setSelectedItem(loja.getEnderecoEstado());
+        campoCidade.setText(loja.getEnderecoCidade());
+        campoTelefone.setText(loja.getTelefoneContato());
+        campoEmail.setText(loja.getEmailContato());
+        campoNumFuncionarios.setText(String.valueOf(loja.getNumFuncionarios()));
     }
 
     private void limpar() {
-        campoCPFPesquisa.setValue(null);
+        campoID.setText(null);
         campoNome.setText(null);
-        campoRG.setValue(null);
-        campoCPF.setValue(null);
-        campoDataNascimento.setValue(null);
         campoLogradouro.setText(null);
         campoBairro.setText(null);
         campoNumero.setText(null);
@@ -85,8 +69,7 @@ public class FormLoja extends javax.swing.JFrame {
         campoCidade.setText(null);
         campoTelefone.setText(null);
         campoEmail.setText(null);
-        campoUsuario.setText(null);
-        campoSenha.setText(null);
+        campoNumFuncionarios.setText(null);
     }
 
     private void padraoBotoes(boolean ativacao) {
@@ -96,7 +79,6 @@ public class FormLoja extends javax.swing.JFrame {
             botaoExcluir.setEnabled(true);
             botaoEditar.setEnabled(true);
             botaoLimpar.setEnabled(false);
-            campoCPF.setEnabled(false);
         } else {
             botaoPesquisar.setText("PESQUISAR");
             botaoPesquisar.setSelected(false);
@@ -104,7 +86,6 @@ public class FormLoja extends javax.swing.JFrame {
             botaoExcluir.setEnabled(false);
             botaoEditar.setEnabled(false);
             botaoLimpar.setEnabled(true);
-            campoCPF.setEnabled(true);
             limpar();
         }
     }
@@ -121,17 +102,11 @@ public class FormLoja extends javax.swing.JFrame {
         painelPesquisa = new javax.swing.JPanel();
         labelSubtitulo1 = new javax.swing.JLabel();
         labelCPFPesquisa = new javax.swing.JLabel();
-        campoCPFPesquisa = new javax.swing.JFormattedTextField();
         botaoPesquisar = new javax.swing.JToggleButton();
+        campoID = new javax.swing.JTextField();
         painelFormulario = new javax.swing.JPanel();
         labelNome = new javax.swing.JLabel();
-        labelCPF = new javax.swing.JLabel();
-        labelRG = new javax.swing.JLabel();
-        labelDataNascimento = new javax.swing.JLabel();
         campoNome = new javax.swing.JTextField();
-        campoCPF = new javax.swing.JFormattedTextField();
-        campoRG = new javax.swing.JFormattedTextField();
-        campoDataNascimento = new javax.swing.JFormattedTextField();
         labelLogradouro = new javax.swing.JLabel();
         labelNumero = new javax.swing.JLabel();
         labelBairro = new javax.swing.JLabel();
@@ -140,8 +115,7 @@ public class FormLoja extends javax.swing.JFrame {
         labelCidade = new javax.swing.JLabel();
         labelTelefone = new javax.swing.JLabel();
         labelEmail = new javax.swing.JLabel();
-        labelUsuario = new javax.swing.JLabel();
-        labelSenha = new javax.swing.JLabel();
+        labelNumFuncionarios = new javax.swing.JLabel();
         campoTelefone = new javax.swing.JFormattedTextField();
         campoNumero = new javax.swing.JTextField();
         campoLogradouro = new javax.swing.JTextField();
@@ -150,8 +124,7 @@ public class FormLoja extends javax.swing.JFrame {
         campoCidade = new javax.swing.JTextField();
         campoSelecaoEstado = new javax.swing.JComboBox<>();
         campoEmail = new javax.swing.JTextField();
-        campoUsuario = new javax.swing.JTextField();
-        campoSenha = new javax.swing.JPasswordField();
+        campoNumFuncionarios = new javax.swing.JTextField();
         painelAcao = new javax.swing.JPanel();
         labelSubtitulo2 = new javax.swing.JLabel();
         botaoInserir = new javax.swing.JButton();
@@ -179,7 +152,7 @@ public class FormLoja extends javax.swing.JFrame {
 
         labelTitulo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         labelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelTitulo.setText("CLIENTE");
+        labelTitulo.setText("LOJA");
 
         javax.swing.GroupLayout panelTituloLayout = new javax.swing.GroupLayout(panelTitulo);
         panelTitulo.setLayout(panelTituloLayout);
@@ -206,18 +179,11 @@ public class FormLoja extends javax.swing.JFrame {
 
         labelSubtitulo1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelSubtitulo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelSubtitulo1.setText("Pesquisar Cliente");
+        labelSubtitulo1.setText("Pesquisar Loja");
 
         labelCPFPesquisa.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelCPFPesquisa.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelCPFPesquisa.setText("CPF: ");
-
-        try {
-            campoCPFPesquisa.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoCPFPesquisa.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        labelCPFPesquisa.setText("ID da Loja: ");
 
         botaoPesquisar.setText("PESQUISAR");
         botaoPesquisar.addActionListener(new java.awt.event.ActionListener() {
@@ -225,6 +191,8 @@ public class FormLoja extends javax.swing.JFrame {
                 botaoPesquisarActionPerformed(evt);
             }
         });
+
+        campoID.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout painelPesquisaLayout = new javax.swing.GroupLayout(painelPesquisa);
         painelPesquisa.setLayout(painelPesquisaLayout);
@@ -234,10 +202,10 @@ public class FormLoja extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(labelSubtitulo1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addComponent(campoID, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(botaoPesquisar)
                 .addContainerGap())
         );
@@ -248,8 +216,8 @@ public class FormLoja extends javax.swing.JFrame {
                 .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelCPFPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(labelSubtitulo1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoCPFPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botaoPesquisar))
+                    .addComponent(botaoPesquisar)
+                    .addComponent(campoID))
                 .addContainerGap())
         );
 
@@ -259,40 +227,7 @@ public class FormLoja extends javax.swing.JFrame {
         labelNome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelNome.setText("Nome:");
 
-        labelCPF.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelCPF.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelCPF.setText("CPF:");
-
-        labelRG.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelRG.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelRG.setText("RG:");
-
-        labelDataNascimento.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelDataNascimento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelDataNascimento.setText("Data de Nascimento: ");
-
         campoNome.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoCPF.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###.###.###-##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoCPF.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoRG.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("UU-###.###.###")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoRG.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
-
-        try {
-            campoDataNascimento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        campoDataNascimento.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         labelLogradouro.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelLogradouro.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -326,13 +261,9 @@ public class FormLoja extends javax.swing.JFrame {
         labelEmail.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelEmail.setText("Email:");
 
-        labelUsuario.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelUsuario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelUsuario.setText("Usuário:");
-
-        labelSenha.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelSenha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelSenha.setText("Senha:");
+        labelNumFuncionarios.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelNumFuncionarios.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNumFuncionarios.setText("Número de Funcionários:");
 
         try {
             campoTelefone.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##) #####-####")));
@@ -356,7 +287,9 @@ public class FormLoja extends javax.swing.JFrame {
 
         campoEmail.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
-        campoUsuario.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoNumFuncionarios.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoNumFuncionarios.setText("0");
+        campoNumFuncionarios.setEnabled(false);
 
         javax.swing.GroupLayout painelFormularioLayout = new javax.swing.GroupLayout(painelFormulario);
         painelFormulario.setLayout(painelFormularioLayout);
@@ -364,24 +297,11 @@ public class FormLoja extends javax.swing.JFrame {
             painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelFormularioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelFormularioLayout.createSequentialGroup()
                         .addComponent(labelNome, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campoNome, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
-                            .addComponent(labelCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(campoCPF))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelFormularioLayout.createSequentialGroup()
-                            .addComponent(labelRG, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(campoRG, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(painelFormularioLayout.createSequentialGroup()
                         .addComponent(labelLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -415,14 +335,10 @@ public class FormLoja extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campoEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelNumFuncionarios, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelFormularioLayout.createSequentialGroup()
-                        .addComponent(labelSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoSenha)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(campoNumFuncionarios, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         painelFormularioLayout.setVerticalGroup(
             painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -431,18 +347,6 @@ public class FormLoja extends javax.swing.JFrame {
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(campoNome)
                     .addComponent(labelNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelCPF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelRG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoRG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelDataNascimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoDataNascimento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelLogradouro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -477,13 +381,9 @@ public class FormLoja extends javax.swing.JFrame {
                     .addComponent(campoEmail))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoUsuario))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelSenha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoSenha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(72, 72, 72))
+                    .addComponent(labelNumFuncionarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(campoNumFuncionarios))
+                .addGap(100, 100, 100))
         );
 
         painelAcao.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 3, true));
@@ -580,7 +480,7 @@ public class FormLoja extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painelPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(painelFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(painelFormulario, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(painelAcao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -600,7 +500,7 @@ public class FormLoja extends javax.swing.JFrame {
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
         if (!camposVazios()) {
             preencherClasse();
-            clienteDAO.inserir(cliente);
+            lojaDAO.inserir(loja);
             JOptionPane.showMessageDialog(this, "Inserção feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limpar();
         } else {
@@ -611,7 +511,7 @@ public class FormLoja extends javax.swing.JFrame {
     private void botaoEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarActionPerformed
         if (!camposVazios()) {
             preencherClasse();
-            clienteDAO.atualizar(cliente);
+            lojaDAO.atualizar(loja);
             JOptionPane.showMessageDialog(this, "Alteração feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             padraoBotoes(false);
         } else {
@@ -620,10 +520,10 @@ public class FormLoja extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoEditarActionPerformed
 
     private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
-        if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
+        if (!campoID.getText().equals("   .   .   -  ")) {
             int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
             if (confirmacao == 0) {
-                clienteDAO.deletar(campoCPFPesquisa.getText());
+                lojaDAO.deletar(Integer.parseInt(campoID.getText()));
                 JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 padraoBotoes(false);
             }
@@ -640,10 +540,11 @@ public class FormLoja extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoLimparActionPerformed
 
     private void botaoPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarActionPerformed
+        
         if (botaoPesquisar.isSelected()) {
             padraoBotoes(true);
-            if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
-                cliente = clienteDAO.pesquisar(campoCPFPesquisa.getText(), 0);
+            if (!campoID.getText().equals("")) {
+                loja = lojaDAO.pesquisar(Integer.parseInt(campoID.getText()));
                 preencherCampos();
                 if (!campoNome.getText().equals("")) {
                     padraoBotoes(true);
@@ -702,39 +603,31 @@ public class FormLoja extends javax.swing.JFrame {
     private javax.swing.JToggleButton botaoPesquisar;
     private javax.swing.JButton botaoVoltar;
     private javax.swing.JTextField campoBairro;
-    private javax.swing.JFormattedTextField campoCPF;
-    private javax.swing.JFormattedTextField campoCPFPesquisa;
     private javax.swing.JTextField campoCidade;
     private javax.swing.JTextField campoComplemento;
-    private javax.swing.JFormattedTextField campoDataNascimento;
     private javax.swing.JTextField campoEmail;
+    private javax.swing.JTextField campoID;
     private javax.swing.JTextField campoLogradouro;
     private javax.swing.JTextField campoNome;
+    private javax.swing.JTextField campoNumFuncionarios;
     private javax.swing.JTextField campoNumero;
-    private javax.swing.JFormattedTextField campoRG;
     private javax.swing.JComboBox<String> campoSelecaoEstado;
-    private javax.swing.JPasswordField campoSenha;
     private javax.swing.JFormattedTextField campoTelefone;
-    private javax.swing.JTextField campoUsuario;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel labelBairro;
-    private javax.swing.JLabel labelCPF;
     private javax.swing.JLabel labelCPFPesquisa;
     private javax.swing.JLabel labelCidade;
     private javax.swing.JLabel labelComplemento;
-    private javax.swing.JLabel labelDataNascimento;
     private javax.swing.JLabel labelEmail;
     private javax.swing.JLabel labelEstado;
     private javax.swing.JLabel labelLogradouro;
     private javax.swing.JLabel labelNome;
+    private javax.swing.JLabel labelNumFuncionarios;
     private javax.swing.JLabel labelNumero;
-    private javax.swing.JLabel labelRG;
-    private javax.swing.JLabel labelSenha;
     private javax.swing.JLabel labelSubtitulo1;
     private javax.swing.JLabel labelSubtitulo2;
     private javax.swing.JLabel labelTelefone;
     private javax.swing.JLabel labelTitulo;
-    private javax.swing.JLabel labelUsuario;
     private javax.swing.JPanel painelAcao;
     private javax.swing.JPanel painelFormulario;
     private javax.swing.JPanel painelPesquisa;
