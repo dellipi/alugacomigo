@@ -2,6 +2,7 @@ package br.inatel.alugacomigo.gui;
 
 import br.inatel.alugacomigo.dao.*;
 import br.inatel.alugacomigo.classes.*;
+import br.inatel.alugacomigo.login.Login;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +51,7 @@ public class FormCliente extends javax.swing.JFrame {
         cliente.setEnderecoCidade(campoCidade.getText());
         cliente.setTelefoneCelular(campoTelefone.getText());
         cliente.setEmail(campoEmail.getText());
-        cliente.setUsuario(campoTelefone.getText());
+        cliente.setUsuario(campoUsuario.getText());
         cliente.setSenha(campoSenha.getText());
     }
 
@@ -594,7 +595,14 @@ public class FormCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
-        // TODO add your handling code here:
+        if(Login.logged != 0){
+            new PaginaInicialLogada().setVisible(true);
+            this.dispose();
+        }
+        else{
+            new PaginaInicial().setVisible(true);
+            this.dispose();
+        }
     }//GEN-LAST:event_botaoVoltarActionPerformed
 
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed

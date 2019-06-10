@@ -63,7 +63,7 @@ public class FormFuncionario extends javax.swing.JFrame {
         funcionario.setEnderecoCidade(campoCidade.getText());
         funcionario.setTelefoneCelular(campoTelefone.getText());
         funcionario.setEmail(campoEmail.getText());
-        funcionario.setUsuario(campoTelefone.getText());
+        funcionario.setUsuario(campoUsuario.getText());
         funcionario.setSenha(campoSenha.getText());
         ((Funcionario) funcionario).setSalarioBase(Float.parseFloat(campoSalario.getText()));
         ((Funcionario) funcionario).setLoja(lojaDAO.pesquisar(lojaDAO.pesquisarId(campoSelecaoLoja.getSelectedItem().toString())));
@@ -707,7 +707,8 @@ public class FormFuncionario extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
-        // TODO add your handling code here:
+        new PaginaInicialLogada().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_botaoVoltarActionPerformed
 
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed

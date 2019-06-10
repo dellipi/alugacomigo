@@ -594,7 +594,8 @@ public class FormOperacao extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
-        // TODO add your handling code here:
+        new PaginaInicialLogada().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_botaoVoltarActionPerformed
 
     private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed

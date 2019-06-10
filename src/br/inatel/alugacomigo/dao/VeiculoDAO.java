@@ -61,7 +61,7 @@ public class VeiculoDAO {
                     
                 }else if(novoVeiculo instanceof VeiculoComercial){
                     
-                    sql = "insert into veiculo_passeio(veiculo_chassi, capacidade_carga_volume, "
+                    sql = "insert into veiculo_comercial(veiculo_chassi, capacidade_carga_volume, "
                         + "capacidade_carga_peso) values (?,?,?);";
                     
                     VeiculoComercial auxVC = (VeiculoComercial) novoVeiculo;
@@ -92,6 +92,7 @@ public class VeiculoDAO {
         
         Loja loja;
         LojaDAO lojaDAO = new LojaDAO();
+        con = new ConexaoBD().getConexao();
         
         switch (tipoVeiculo) {
             case 0:
@@ -131,11 +132,11 @@ public class VeiculoDAO {
             
             if(v instanceof VeiculoPasseio){
                     
-                sql = "select * from veiculo_passeio where chassi = ?;";
+                sql = "select * from veiculo_passeio where veiculo_chassi = ?;";
 
                 pst = con.prepareStatement(sql);
                 pst.setString(1, chassi);
-                rs = pst.executeQuery(sql);
+                rs = pst.executeQuery();
 
                 while (rs.next()) {
                     ((VeiculoPasseio) v).setCapacidadePassageiros(rs.getInt("capacidade_passageiros"));
@@ -144,11 +145,11 @@ public class VeiculoDAO {
 
             }else if(v instanceof VeiculoComercial){
 
-                sql = "select * from veiculo_comercial where chassi = ?;";
+                sql = "select * from veiculo_comercial where veiculo_chassi = ?;";
 
                 pst = con.prepareStatement(sql);
                 pst.setString(1, chassi);
-                rs = pst.executeQuery(sql);
+                rs = pst.executeQuery();
 
                 while (rs.next()) {
                     ((VeiculoComercial) v).setCapacidadeCargaVolume(rs.getInt("capacidade_passageiros"));
@@ -208,7 +209,7 @@ public class VeiculoDAO {
                     
                 }else if(veiculo instanceof VeiculoComercial){
                     
-                    sql = "update veiculo_passeio set, capacidade_carga_volume = ?, "
+                    sql = "update veiculo_comercial set, capacidade_carga_volume = ?, "
                         + "capacidade_carga_peso = ? where veiculo_chassi = ?;";
                     
                     VeiculoComercial auxVC = (VeiculoComercial) veiculo;
@@ -233,6 +234,7 @@ public class VeiculoDAO {
     public boolean deletar(String chassi) {
         
         String sql = "delete from veiculo where chassi = ?;";
+        con = new ConexaoBD().getConexao();
         
         try {
             pst = con.prepareStatement(sql);
