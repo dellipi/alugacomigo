@@ -2,25 +2,43 @@ package br.inatel.alugacomigo.classes;
 
 public class Venda {
 
-    private VeiculoPasseio vp;
-    private VeiculoComercial vc;
+    private int idVenda;
+    private Veiculo veiculo;
     private Cliente cliente;
-    private Funcionario funcionario;    
+    private Funcionario funcionario;
+    private float valorTotal;
+    private String dataVenda;
 
-    public VeiculoPasseio getVp() {
-        return vp;
+    public int getIdVenda() {
+        return idVenda;
     }
 
-    public void setVp(VeiculoPasseio vp) {
-        this.vp = vp;
+    public void setIdVenda(int idVenda) {
+        this.idVenda = idVenda;
     }
 
-    public VeiculoComercial getVc() {
-        return vc;
+    public float getValorTotal() {
+        return valorTotal;
     }
 
-    public void setVc(VeiculoComercial vc) {
-        this.vc = vc;
+    public void setValorTotal(float valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public String getDataVenda() {
+        return dataVenda;
+    }
+
+    public void setDataVenda(String dataVenda) {
+        this.dataVenda = dataVenda;
+    }
+
+    public Veiculo getVeiculo() {
+        return veiculo;
+    }
+
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
     }
 
     public Cliente getCliente() {

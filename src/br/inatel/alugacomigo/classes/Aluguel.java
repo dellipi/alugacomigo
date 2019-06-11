@@ -1,35 +1,57 @@
 package br.inatel.alugacomigo.classes;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.text.SimpleDateFormat;  
 
 public class Aluguel {
     
-    private Date dataInicio;
-    private Date dataFim;
+    private int idAluguel;
+    private String dataInicio;
+    private String dataFim;
     private int km;
-    private VeiculoPasseio vp;
-    private VeiculoComercial vc;
+    private Veiculo veiculo;
     private Cliente cliente;
     private Funcionario funcionario;
+    private float valorTotal;
+
+    public int getIdAluguel() {
+        return idAluguel;
+    }
+
+    public void setIdAluguel(int idAluguel) {
+        this.idAluguel = idAluguel;
+    }
+
+    public float getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(float valorTotal) {
+        this.valorTotal = valorTotal;
+    }
     
-    public int getQtdDias(){
-        int diff = (int) (dataFim.getTime() - dataInicio.getTime());
+    public int getQtdDias() throws ParseException{
+        Date dateInicio = new SimpleDateFormat("dd/MM/yyyy").parse(this.dataInicio);
+        Date dateFim = new SimpleDateFormat("dd/MM/yyyy").parse(this.dataFim);
+        
+        int diff = (int) (dateFim.getTime() - dateInicio.getTime());
         return diff;
     }
 
-    public Date getDataInicio() {
+    public String getDataInicio() {
         return dataInicio;
     }
 
-    public void setDataInicio(Date dataInicio) {
+    public void setDataInicio(String dataInicio) {
         this.dataInicio = dataInicio;
     }
 
-    public Date getDataFim() {
+    public String getDataFim() {
         return dataFim;
     }
 
-    public void setDataFim(Date dataFim) {
+    public void setDataFim(String dataFim) {
         this.dataFim = dataFim;
     }
 
@@ -41,20 +63,12 @@ public class Aluguel {
         this.km = km;
     }
 
-    public VeiculoPasseio getVp() {
-        return vp;
+    public Veiculo getVeiculo() {
+        return veiculo;
     }
 
-    public void setVp(VeiculoPasseio vp) {
-        this.vp = vp;
-    }
-
-    public VeiculoComercial getVc() {
-        return vc;
-    }
-
-    public void setVc(VeiculoComercial vc) {
-        this.vc = vc;
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
     }
 
     public Cliente getCliente() {

@@ -195,7 +195,7 @@ public class FormVeiculoPasseio extends javax.swing.JFrame {
 
         labelTitulo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         labelTitulo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelTitulo.setText("VEÍCULO COMERCIAL");
+        labelTitulo.setText("VEÍCULO PASSEIO");
 
         javax.swing.GroupLayout panelTituloLayout = new javax.swing.GroupLayout(panelTitulo);
         panelTitulo.setLayout(panelTituloLayout);
@@ -618,7 +618,7 @@ public class FormVeiculoPasseio extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoEditarActionPerformed
 
     private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
-        if (!campoChassiBusca.getText().equals("   -    ")) {
+        if (!campoChassiBusca.getText().equals("")) {
             int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
             if (confirmacao == 0) {
                 veiculoDAO.deletar(campoChassiBusca.getText());
@@ -640,7 +640,7 @@ public class FormVeiculoPasseio extends javax.swing.JFrame {
     private void botaoPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarActionPerformed
         if (botaoPesquisar.isSelected()) {
             padraoBotoes(true);
-            if (!campoChassiBusca.getText().equals("   -    ")) {
+            if (!campoChassiBusca.getText().equals("")) {
                 veiculo = veiculoDAO.pesquisar(campoChassiBusca.getText(), 0);
                 preencherCampos();
                 if (!campoMarca.getText().equals("")) {

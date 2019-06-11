@@ -616,7 +616,7 @@ public class FormVeiculoComercial extends javax.swing.JFrame {
     }//GEN-LAST:event_botaoEditarActionPerformed
 
     private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
-        if (!campoChassiBusca.getText().equals("   -    ")) {
+        if (!campoChassiBusca.getText().equals("")) {
             int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
             if (confirmacao == 0) {
                 veiculoDAO.deletar(campoChassiBusca.getText());
@@ -638,8 +638,8 @@ public class FormVeiculoComercial extends javax.swing.JFrame {
     private void botaoPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarActionPerformed
         if (botaoPesquisar.isSelected()) {
             padraoBotoes(true);
-            if (!campoChassiBusca.getText().equals("   -    ")) {
-                veiculo = veiculoDAO.pesquisar(campoChassiBusca.getText(), 0);
+            if (!campoChassiBusca.getText().equals("")) {
+                veiculo = veiculoDAO.pesquisar(campoChassiBusca.getText(), 1);
                 preencherCampos();
                 if (!campoMarca.getText().equals("")) {
                     padraoBotoes(true);
