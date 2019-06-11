@@ -116,6 +116,7 @@ public class VendaDAO {
             pst.setInt(3, venda.getFuncionario().getIdFuncionario());
             pst.setString(4, venda.getDataVenda());
             pst.setFloat(5, venda.getValorTotal());
+            pst.setFloat(6, venda.getIdVenda());
             pst.execute();
             
             success = true;
