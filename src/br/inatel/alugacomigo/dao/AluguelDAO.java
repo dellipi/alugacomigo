@@ -72,28 +72,18 @@ public class AluguelDAO {
 
         try {
 
-            sql = "select * from venda where id_aluguel = ?;";
+            sql = "select * from aluguel where id_aluguel = ?;";
             pst = con.prepareStatement(sql);
             pst.setInt(1, idAluguel);
             rs = pst.executeQuery();
 
             while (rs.next()) {
-                aluguel.setIdAluguel(rs.getInt("id_venda"));
+                aluguel.setIdAluguel(rs.getInt("id_aluguel"));
                 aluguel.setVeiculo(veiculoDAO.pesquisar(rs.getString("veiculo_chassi"), tipoCarro));
                 aluguel.setCliente((Cliente) pessoaDAO.pesquisar(rs.getString("cliente_cpf"), 0));
-                
-                sqlAux = "select pessoa_cpf from cliente where id_funcionario = ?;";
-                pst = con.prepareStatement(sql);
-                pst.setInt(1, rs.getInt("funcionario_id"));
-                rsAux = pst.executeQuery();
-                
-                while(rsAux.next()){
-                    cpfAux = rsAux.getString("pessoa_cpf");
-                }
-                
-                aluguel.setFuncionario((Funcionario) pessoaDAO.pesquisar(cpfAux, 1));
+                aluguel.setFuncionario((Funcionario) pessoaDAO.pesquisarFunc(Integer.parseInt(rs.getString("funcionario_id"))));
                 aluguel.setDataInicio(rs.getString("data_inicio"));
-                aluguel.setDataInicio(rs.getString("data_fim"));
+                aluguel.setDataFim(rs.getString("data_fim"));
                 aluguel.setKm(rs.getInt("km"));
                 aluguel.setValorTotal(rs.getFloat("valor_total"));
             }

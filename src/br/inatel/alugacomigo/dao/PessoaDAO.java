@@ -173,6 +173,70 @@ public class PessoaDAO {
         }
     }
     
+    public Pessoa pesquisarFunc(int idFuncionario) {
+
+        Pessoa p = new Funcionario();
+        int idAux;
+        String sql;
+        String sqlAux;
+        String cpf = "";
+        
+        Loja loja;
+        Loja[] lojas = new Loja[100];
+        LojaDAO lojaDAO = new LojaDAO();
+        
+        con = new ConexaoBD().getConexao();
+
+        try {
+
+            sql = "select * from funcionario where id_funcionario = ?;";
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, idFuncionario);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                cpf = rs.getString("pessoa_cpf");
+                ((Funcionario) p).setIdFuncionario(rs.getInt("id_funcionario"));
+                ((Funcionario) p).setValorFaturado(rs.getFloat("valor_faturado"));
+                ((Funcionario) p).setSalarioBase(rs.getFloat("salario_base"));
+                ((Funcionario) p).setTipoFuncionario(rs.getString("tipo_funcionario"));
+
+                idAux = rs.getInt("loja_id_loja");
+                loja = lojaDAO.pesquisar(idAux);
+                ((Funcionario) p).setLoja(loja);
+            }
+            
+            sql = "select * from pessoa where cpf = ?;";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, cpf);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                p.setCpf(rs.getString("cpf"));
+                p.setRg(rs.getString("rg"));
+                p.setNome(rs.getString("nome"));
+                p.setDataNascimento(rs.getString("data_nascimento"));
+                p.setEnderecoLogradouro(rs.getString("endereco_logradouro"));
+                p.setEnderecoNumero(rs.getInt("endereco_numero"));
+                p.setEnderecoBairro(rs.getString("endereco_bairro"));
+                p.setEnderecoComplemento(rs.getString("endereco_complemento"));
+                p.setEnderecoEstado(rs.getString("endereco_estado"));
+                p.setEnderecoCidade(rs.getString("endereco_cidade"));
+                p.setTelefoneCelular(rs.getString("telefone_celular"));
+                p.setEmail(rs.getString("email"));
+                p.setUsuario(rs.getString("usuario"));
+                p.setSenha(rs.getString("senha"));
+            }
+
+            pst.close();
+            return p;
+
+        } catch (SQLException ex) {
+            System.out.println("Erro = " + ex.getMessage());
+            return null;
+        }
+    }
+    
     public boolean atualizar(Pessoa pessoa) {
         
         int idAux = 0;

@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/PaginaInicialLogada.java</file>
-            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/dao/VeiculoDAO.java</file>
-            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/FormVeiculoPasseio.java</file>
-            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/FormVeiculoComercial.java</file>
+            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/FormOperacao.java</file>
+            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/FormCliente.java</file>
+            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/classes/Aluguel.java</file>
+            <file>file:/C:/Users/André%20Fillipi/Documents/NetBeansProjects/AlugaComigo/src/br/inatel/alugacomigo/gui/FormFuncionario.java</file>
         </group>
     </open-files>
 </project-private>

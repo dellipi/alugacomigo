@@ -76,17 +76,7 @@ public class VendaDAO {
                 venda.setIdVenda(rs.getInt("id_venda"));
                 venda.setVeiculo(veiculoDAO.pesquisar(rs.getString("veiculo_chassi"), tipoCarro));
                 venda.setCliente((Cliente) pessoaDAO.pesquisar(rs.getString("cliente_cpf"), 0));
-                
-                sqlAux = "select pessoa_cpf from cliente where id_funcionario = ?;";
-                pst = con.prepareStatement(sql);
-                pst.setInt(1, rs.getInt("funcionario_id"));
-                rsAux = pst.executeQuery();
-                
-                while(rsAux.next()){
-                    cpfAux = rsAux.getString("pessoa_cpf");
-                }
-                
-                venda.setFuncionario((Funcionario) pessoaDAO.pesquisar(cpfAux, 1));
+                venda.setFuncionario((Funcionario) pessoaDAO.pesquisarFunc(Integer.parseInt(rs.getString("funcionario_id"))));
                 venda.setDataVenda(rs.getString("data_venda"));
                 venda.setValorTotal(rs.getFloat("valor_total"));
             }

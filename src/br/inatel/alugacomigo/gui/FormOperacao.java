@@ -4,62 +4,222 @@ import br.inatel.alugacomigo.dao.*;
 import br.inatel.alugacomigo.classes.*;
 import java.awt.event.ActionEvent;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import jdk.nashorn.internal.ir.Flags;
 
 public class FormOperacao extends javax.swing.JFrame {
     
-    Pessoa cliente = new Cliente();
-    PessoaDAO clienteDAO = new PessoaDAO();
+    Aluguel aluguel = new Aluguel();
+    AluguelDAO aluguelDAO = new AluguelDAO();
+    Venda venda = new Venda();
+    VendaDAO vendaDAO = new VendaDAO();
+    
+    Cliente cliente = new Cliente();
+    Funcionario funcionario = new Funcionario();
+    PessoaDAO pessoaDAO = new PessoaDAO();
+    
+    Veiculo veiculoPasseio = new VeiculoPasseio();
+    Veiculo veiculoComercial = new VeiculoComercial();
+    VeiculoDAO veiculoDAO = new VeiculoDAO();
     
     public FormOperacao() {
         initComponents();
     }
     
-    private boolean camposVazios() {
+    public int getQtdDias() throws ParseException{
+        Date dateInicio = new SimpleDateFormat("dd/MM/yyyy").parse(campoDataInicio.getText());
+        Date dateFim = new SimpleDateFormat("dd/MM/yyyy").parse(campoDataFim.getText());
+        
+        int diff = (int) (dateFim.getTime() - dateInicio.getTime());
+        return (diff / (1000*60*60*24));
+    }
+    
+    private boolean camposVaziosA() {
         boolean verificacao = false;
         if (campoCPFCliente.getText().equals("   .   .   -  ")
                 || campoIDFuncionario.getText().equals("")
                 || campoChassi.getText().equals("")
+                || campoDataInicio.getText().equals("  /  /    ")
+                || campoDataFim.getText().equals("  /  /    ")
+                || tipoVeiculo.getSelectedIndex() == 0
+                //|| campoKM.getText().equals("")
                 ) {
             verificacao = true;
         }
         return (verificacao);
     }
     
-    private void preencherClasse(){
+    private boolean camposVaziosV() {
+        boolean verificacao = false;
+        if (campoCPFCliente.getText().equals("   .   .   -  ")
+                || campoIDFuncionario.getText().equals("")
+                || campoChassi.getText().equals("")
+                || campoDataVenda.getText().equals("  /  /    ")
+                || tipoVeiculo.getSelectedIndex() == 0
+                ) {
+            verificacao = true;
+        }
+        return (verificacao);
+    }
+    
+    private void preencherClasseA(){
+        cliente = (Cliente) pessoaDAO.pesquisar(campoCPFCliente.getText(), 0);
+        funcionario = (Funcionario) pessoaDAO.pesquisarFunc(Integer.parseInt(campoIDFuncionario.getText()));
         
+        aluguel.setCliente(cliente);
+        aluguel.setFuncionario(funcionario);
+        
+        if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+            veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+            aluguel.setVeiculo(veiculoComercial);
+        }
+        else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+            veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+            aluguel.setVeiculo(veiculoPasseio);
+        }
+        
+        aluguel.setDataInicio(campoDataInicio.getText());
+        aluguel.setDataFim(campoDataFim.getText());
+        aluguel.setKm(Integer.parseInt(campoKM.getText()));
+        aluguel.setValorTotal(Float.parseFloat(campoValorTotalA.getText()));
     }
 
-    private void preencherCampos() {
+    private void preencherClasseV(){
+        cliente = (Cliente) pessoaDAO.pesquisar(campoCPFCliente.getText(), 0);
+        funcionario = (Funcionario) pessoaDAO.pesquisarFunc(Integer.parseInt(campoIDFuncionario.getText()));
         
+        venda.setCliente(cliente);
+        venda.setFuncionario(funcionario);
+        
+        if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+            veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+            venda.setVeiculo(veiculoComercial);
+        }
+        else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+            veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+            venda.setVeiculo(veiculoPasseio);
+        }
+        
+        venda.setDataVenda(campoDataVenda.getText());
+        venda.setValorTotal(Float.parseFloat(campoValorTotal.getText()));
+    }
+    
+    private void preencherCamposA(){
+        campoCPFCliente.setText(aluguel.getCliente().getCpf());
+        campoIDFuncionario.setText(String.valueOf(aluguel.getFuncionario().getIdFuncionario()));
+        campoIDAluguel.setText(String.valueOf(aluguel.getIdAluguel()));
+        campoChassi.setText(aluguel.getVeiculo().getChassi());
+        if(aluguel.getVeiculo() instanceof VeiculoComercial){
+            tipoVeiculo.setSelectedItem("Veículo Comercial");
+        }
+        else if(aluguel.getVeiculo() instanceof VeiculoPasseio){
+            tipoVeiculo.setSelectedItem("Veículo de Passeio");
+        }
+        if(aluguel.getKm() > 0){
+            tipoAluguel.setSelectedItem("Por quilometragem");
+        }
+        else {
+            tipoVeiculo.setSelectedItem("Por dia");
+        }
+        campoDataInicio.setText(aluguel.getDataInicio());
+        campoDataFim.setText(aluguel.getDataFim());
+        campoKM.setText(String.valueOf(aluguel.getKm()));
+        campoValorTotalA.setText(String.valueOf(aluguel.getValorTotal()));
     }
 
-    private void limpar() {
-        
+    private void preencherCamposV() {
+        campoCPFCliente.setText(venda.getCliente().getCpf());
+        campoIDFuncionario.setText(String.valueOf(venda.getFuncionario().getIdFuncionario()));
+        campoIDVenda.setText(String.valueOf(venda.getIdVenda()));
+        campoChassi.setText(venda.getVeiculo().getChassi());
+        if(venda.getVeiculo() instanceof VeiculoComercial){
+            tipoVeiculo.setSelectedItem("Veículo Comercial");
+        }
+        else if(venda.getVeiculo() instanceof VeiculoPasseio){
+            tipoVeiculo.setSelectedItem("Veículo de Passeio");
+        }
+        campoDataVenda.setText(venda.getDataVenda());
+        campoValorTotal.setText(String.valueOf(venda.getValorTotal()));
+    }
+    
+    private void limparA(){
+        campoCPFCliente.setText(null);
+        campoIDFuncionario.setText(null);
+        campoIDAluguel.setText(null);
+        campoChassi.setText(null);
+        tipoAluguel.setSelectedIndex(0);
+        tipoVeiculo.setSelectedIndex(0);
+        campoDataInicio.setText(null);
+        campoDataFim.setText(null);
+        campoKM.setText(null);
+        campoValorTotalA.setText(null);
     }
 
-    private void padraoBotoes(boolean ativacao) {
+    private void limparV() {
+        campoCPFCliente.setText(null);
+        campoIDFuncionario.setText(null);
+        campoIDVenda.setText(null);
+        campoChassi.setText(null);
+        tipoVeiculo.setSelectedIndex(0);
+        campoDataVenda.setText(null);
+        campoValorTotal.setText(null);
+    }
+
+    private void padraoBotoesA(boolean ativacao) {
         if (ativacao == true) {
-            botaoPesquisarVenda.setText("CANCELAR");
-            botaoInserir.setEnabled(false);
-            botaoExcluir.setEnabled(true);
-            botaoEditar.setEnabled(true);
-            botaoLimpar.setEnabled(false);
-            //campoCPF.setEnabled(false);
+            botaoPesquisarAluguel.setText("CANCELAR");
+            botaoInserirA.setEnabled(false);
+            botaoExcluirA.setEnabled(true);
+            botaoEditarA.setEnabled(true);
+            botaoLimparA.setEnabled(false);
+            campoCPFCliente.setEnabled(false);
+            campoIDFuncionario.setEnabled(false);
+            campoChassi.setEnabled(false);
+            campoIDAluguel.setEnabled(false);
         } else {
-            botaoPesquisarVenda.setText("PESQUISAR");
-            botaoPesquisarVenda.setSelected(false);
-            botaoInserir.setEnabled(true);
-            botaoExcluir.setEnabled(false);
-            botaoEditar.setEnabled(false);
-            botaoLimpar.setEnabled(true);
-            //campoCPF.setEnabled(true);
-            limpar();
+            botaoPesquisarAluguel.setText("PESQUISAR");
+            botaoPesquisarAluguel.setSelected(false);
+            botaoInserirA.setEnabled(true);
+            botaoExcluirA.setEnabled(false);
+            botaoEditarA.setEnabled(false);
+            botaoLimparA.setEnabled(true);
+            campoCPFCliente.setEnabled(true);
+            campoIDFuncionario.setEnabled(true);
+            campoChassi.setEnabled(true);
+            campoIDAluguel.setEnabled(true);
+            limparA();
         }
     }
     
+    private void padraoBotoesV(boolean ativacao) {
+        if (ativacao == true) {
+            botaoPesquisarVenda.setText("CANCELAR");
+            botaoInserirV.setEnabled(false);
+            botaoExcluirV.setEnabled(true);
+            botaoEditarV.setEnabled(true);
+            botaoLimparV.setEnabled(false);
+            campoCPFCliente.setEnabled(false);
+            campoIDFuncionario.setEnabled(false);
+            campoChassi.setEnabled(false);
+            campoIDVenda.setEnabled(false);                    
+        } else {
+            botaoPesquisarVenda.setText("PESQUISAR");
+            botaoPesquisarVenda.setSelected(false);
+            botaoInserirV.setEnabled(true);
+            botaoExcluirV.setEnabled(false);
+            botaoEditarV.setEnabled(false);
+            botaoLimparV.setEnabled(true);
+            campoCPFCliente.setEnabled(true);
+            campoIDFuncionario.setEnabled(true);
+            campoChassi.setEnabled(true);
+            campoIDVenda.setEnabled(true);
+            limparV();
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -88,12 +248,8 @@ public class FormOperacao extends javax.swing.JFrame {
         labelSubtitulo5 = new javax.swing.JLabel();
         campoDataInicio = new javax.swing.JFormattedTextField();
         campoDataFim = new javax.swing.JFormattedTextField();
-        painelAcao = new javax.swing.JPanel();
-        labelSubtitulo2 = new javax.swing.JLabel();
-        botaoInserir = new javax.swing.JButton();
-        botaoExcluir = new javax.swing.JButton();
-        botaoEditar = new javax.swing.JButton();
-        botaoLimpar = new javax.swing.JButton();
+        labelNome3 = new javax.swing.JLabel();
+        tipoAluguel = new javax.swing.JComboBox<>();
         painelFormulario1 = new javax.swing.JPanel();
         labelNome1 = new javax.swing.JLabel();
         labelLogradouro1 = new javax.swing.JLabel();
@@ -107,12 +263,20 @@ public class FormOperacao extends javax.swing.JFrame {
         campoChassi = new javax.swing.JTextField();
         campoIDFuncionario = new javax.swing.JTextField();
         campoCPFCliente = new javax.swing.JFormattedTextField();
+        labelNumero3 = new javax.swing.JLabel();
+        tipoVeiculo = new javax.swing.JComboBox<>();
+        painelAcao = new javax.swing.JPanel();
+        labelSubtitulo2 = new javax.swing.JLabel();
+        botaoInserirA = new javax.swing.JButton();
+        botaoEditarA = new javax.swing.JButton();
+        botaoExcluirA = new javax.swing.JButton();
+        botaoLimparA = new javax.swing.JButton();
         painelAcao1 = new javax.swing.JPanel();
         labelSubtitulo4 = new javax.swing.JLabel();
-        botaoInserir1 = new javax.swing.JButton();
-        botaoExcluir1 = new javax.swing.JButton();
-        botaoEditar1 = new javax.swing.JButton();
-        botaoLimpar1 = new javax.swing.JButton();
+        botaoInserirV = new javax.swing.JButton();
+        botaoEditarV = new javax.swing.JButton();
+        botaoExcluirV = new javax.swing.JButton();
+        botaoLimparV = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -168,6 +332,11 @@ public class FormOperacao extends javax.swing.JFrame {
         labelCPFPesquisa.setText("ID: ");
 
         botaoPesquisarVenda.setText("PESQUISAR");
+        botaoPesquisarVenda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoPesquisarVendaActionPerformed(evt);
+            }
+        });
 
         campoIDAluguel.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
@@ -182,6 +351,11 @@ public class FormOperacao extends javax.swing.JFrame {
         campoIDVenda.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         botaoPesquisarAluguel.setText("PESQUISAR");
+        botaoPesquisarAluguel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoPesquisarAluguelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelPesquisaLayout = new javax.swing.GroupLayout(painelPesquisa);
         painelPesquisa.setLayout(painelPesquisaLayout);
@@ -241,8 +415,15 @@ public class FormOperacao extends javax.swing.JFrame {
         labelBairro.setText("Valor Total:");
 
         campoKM.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoKM.setEnabled(false);
+        campoKM.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                campoKMFocusLost(evt);
+            }
+        });
 
         campoValorTotalA.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoValorTotalA.setEnabled(false);
 
         labelSubtitulo5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelSubtitulo5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -259,6 +440,23 @@ public class FormOperacao extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        campoDataFim.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                campoDataFimFocusLost(evt);
+            }
+        });
+
+        labelNome3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelNome3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNome3.setText("Tipo Aluguel:");
+
+        tipoAluguel.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        tipoAluguel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "Por dia", "Por quilometragem" }));
+        tipoAluguel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tipoAluguelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelFormularioLayout = new javax.swing.GroupLayout(painelFormulario);
         painelFormulario.setLayout(painelFormularioLayout);
@@ -278,11 +476,15 @@ public class FormOperacao extends javax.swing.JFrame {
                     .addGroup(painelFormularioLayout.createSequentialGroup()
                         .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(labelNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(labelLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(labelLogradouro, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelNome3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(campoDataInicio)
-                            .addComponent(campoDataFim)))
+                            .addComponent(campoDataFim)
+                            .addGroup(painelFormularioLayout.createSequentialGroup()
+                                .addComponent(tipoAluguel, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addComponent(labelSubtitulo5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -291,6 +493,10 @@ public class FormOperacao extends javax.swing.JFrame {
             .addGroup(painelFormularioLayout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addComponent(labelSubtitulo5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelNome3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tipoAluguel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormularioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelNome, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -310,80 +516,6 @@ public class FormOperacao extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        painelAcao.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 3, true));
-
-        labelSubtitulo2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        labelSubtitulo2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelSubtitulo2.setText("AÇÕES - ALUGUEL");
-
-        botaoInserir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoInserir.setText("INSERIR");
-        botaoInserir.setEnabled(false);
-        botaoInserir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoInserirActionPerformed(evt);
-            }
-        });
-
-        botaoExcluir.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoExcluir.setText("EXCLUIR");
-        botaoExcluir.setEnabled(false);
-        botaoExcluir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoExcluirActionPerformed(evt);
-            }
-        });
-
-        botaoEditar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoEditar.setText("EDITAR");
-        botaoEditar.setEnabled(false);
-        botaoEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoEditarActionPerformed(evt);
-            }
-        });
-
-        botaoLimpar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoLimpar.setText("LIMPAR");
-        botaoLimpar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoLimparActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout painelAcaoLayout = new javax.swing.GroupLayout(painelAcao);
-        painelAcao.setLayout(painelAcaoLayout);
-        painelAcaoLayout.setHorizontalGroup(
-            painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelAcaoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelAcaoLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(botaoInserir)
-                .addGap(18, 18, 18)
-                .addComponent(botaoEditar)
-                .addGap(18, 18, 18)
-                .addComponent(botaoExcluir)
-                .addGap(18, 18, 18)
-                .addComponent(botaoLimpar)
-                .addGap(41, 41, 41))
-        );
-        painelAcaoLayout.setVerticalGroup(
-            painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelAcaoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botaoInserir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoExcluir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoLimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
         painelFormulario1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 3, true));
 
         labelNome1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -395,6 +527,7 @@ public class FormOperacao extends javax.swing.JFrame {
         labelLogradouro1.setText("Valor Total:");
 
         campoValorTotal.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        campoValorTotal.setEnabled(false);
 
         labelSubtitulo6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         labelSubtitulo6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -405,6 +538,16 @@ public class FormOperacao extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        campoDataVenda.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                campoDataVendaFocusLost(evt);
+            }
+        });
+        campoDataVenda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoDataVendaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelFormulario1Layout = new javax.swing.GroupLayout(painelFormulario1);
         painelFormulario1.setLayout(painelFormulario1Layout);
@@ -428,7 +571,7 @@ public class FormOperacao extends javax.swing.JFrame {
             painelFormulario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelFormulario1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelSubtitulo6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(labelSubtitulo6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormulario1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelNome1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -464,26 +607,37 @@ public class FormOperacao extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
+        labelNumero3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelNumero3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelNumero3.setText("Tipo Veículo:");
+
+        tipoVeiculo.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        tipoVeiculo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecione", "Veículo Comercial", "Veículo de Passeio" }));
+
         javax.swing.GroupLayout painelFormulario2Layout = new javax.swing.GroupLayout(painelFormulario2);
         painelFormulario2.setLayout(painelFormulario2Layout);
         painelFormulario2Layout.setHorizontalGroup(
             painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelFormulario2Layout.createSequentialGroup()
-                .addGap(217, 217, 217)
-                .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelFormulario2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(painelFormulario2Layout.createSequentialGroup()
                         .addComponent(labelNumero2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(campoChassi, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(campoChassi, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(labelNome2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(labelLogradouro2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(campoCPFCliente)
+                        .addComponent(campoIDFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(painelFormulario2Layout.createSequentialGroup()
-                        .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(labelNome2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(labelLogradouro2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(labelNumero3, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(campoIDFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
-                            .addComponent(campoCPFCliente))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(tipoVeiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(191, 191, 191))
         );
         painelFormulario2Layout.setVerticalGroup(
             painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -499,7 +653,78 @@ public class FormOperacao extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelFormulario2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelNumero2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoChassi))
+                    .addComponent(campoChassi)
+                    .addComponent(labelNumero3)
+                    .addComponent(tipoVeiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        painelAcao.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 3, true));
+
+        labelSubtitulo2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        labelSubtitulo2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelSubtitulo2.setText("AÇÕES - ALUGUEL");
+
+        botaoInserirA.setText("INSERIR");
+        botaoInserirA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoInserirAActionPerformed(evt);
+            }
+        });
+
+        botaoEditarA.setText("EDITAR");
+        botaoEditarA.setEnabled(false);
+        botaoEditarA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoEditarAActionPerformed(evt);
+            }
+        });
+
+        botaoExcluirA.setText("EXCLUIR");
+        botaoExcluirA.setEnabled(false);
+        botaoExcluirA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoExcluirAActionPerformed(evt);
+            }
+        });
+
+        botaoLimparA.setText("LIMPAR");
+        botaoLimparA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botaoLimparAActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout painelAcaoLayout = new javax.swing.GroupLayout(painelAcao);
+        painelAcao.setLayout(painelAcaoLayout);
+        painelAcaoLayout.setHorizontalGroup(
+            painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(painelAcaoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(painelAcaoLayout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(botaoInserirA)
+                .addGap(18, 18, 18)
+                .addComponent(botaoEditarA)
+                .addGap(18, 18, 18)
+                .addComponent(botaoExcluirA)
+                .addGap(18, 18, 18)
+                .addComponent(botaoLimparA)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        painelAcaoLayout.setVerticalGroup(
+            painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(painelAcaoLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelSubtitulo2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(10, 10, 10)
+                .addGroup(painelAcaoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(botaoInserirA)
+                    .addComponent(botaoEditarA)
+                    .addComponent(botaoLimparA)
+                    .addComponent(botaoExcluirA))
                 .addContainerGap())
         );
 
@@ -509,37 +734,33 @@ public class FormOperacao extends javax.swing.JFrame {
         labelSubtitulo4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelSubtitulo4.setText("AÇÕES - VENDA");
 
-        botaoInserir1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoInserir1.setText("INSERIR");
-        botaoInserir1.addActionListener(new java.awt.event.ActionListener() {
+        botaoInserirV.setText("INSERIR");
+        botaoInserirV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoInserir1ActionPerformed(evt);
+                botaoInserirVActionPerformed(evt);
             }
         });
 
-        botaoExcluir1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoExcluir1.setText("EXCLUIR");
-        botaoExcluir1.setEnabled(false);
-        botaoExcluir1.addActionListener(new java.awt.event.ActionListener() {
+        botaoEditarV.setText("EDITAR");
+        botaoEditarV.setEnabled(false);
+        botaoEditarV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoExcluir1ActionPerformed(evt);
+                botaoEditarVActionPerformed(evt);
             }
         });
 
-        botaoEditar1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoEditar1.setText("EDITAR");
-        botaoEditar1.setEnabled(false);
-        botaoEditar1.addActionListener(new java.awt.event.ActionListener() {
+        botaoExcluirV.setText("EXCLUIR");
+        botaoExcluirV.setEnabled(false);
+        botaoExcluirV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoEditar1ActionPerformed(evt);
+                botaoExcluirVActionPerformed(evt);
             }
         });
 
-        botaoLimpar1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        botaoLimpar1.setText("LIMPAR");
-        botaoLimpar1.addActionListener(new java.awt.event.ActionListener() {
+        botaoLimparV.setText("LIMPAR");
+        botaoLimparV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botaoLimpar1ActionPerformed(evt);
+                botaoLimparVActionPerformed(evt);
             }
         });
 
@@ -549,18 +770,18 @@ public class FormOperacao extends javax.swing.JFrame {
             painelAcao1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelAcao1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelSubtitulo4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(labelSubtitulo4, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelAcao1Layout.createSequentialGroup()
-                .addContainerGap(17, Short.MAX_VALUE)
-                .addComponent(botaoInserir1)
+            .addGroup(painelAcao1Layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(botaoInserirV)
                 .addGap(18, 18, 18)
-                .addComponent(botaoEditar1)
+                .addComponent(botaoEditarV)
                 .addGap(18, 18, 18)
-                .addComponent(botaoExcluir1)
+                .addComponent(botaoExcluirV)
                 .addGap(18, 18, 18)
-                .addComponent(botaoLimpar1)
-                .addGap(41, 41, 41))
+                .addComponent(botaoLimparV)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         painelAcao1Layout.setVerticalGroup(
             painelAcao1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -569,11 +790,11 @@ public class FormOperacao extends javax.swing.JFrame {
                 .addComponent(labelSubtitulo4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelAcao1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botaoInserir1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoExcluir1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoEditar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoLimpar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(botaoInserirV)
+                    .addComponent(botaoEditarV)
+                    .addComponent(botaoLimparV)
+                    .addComponent(botaoExcluirV))
+                .addGap(15, 15, 15))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -621,6 +842,9 @@ public class FormOperacao extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         this.setLocationRelativeTo(null);
+        campoKM.setText("0");
+        campoValorTotal.setText("0");
+        campoValorTotalA.setText("0");
     }//GEN-LAST:event_formWindowOpened
 
     private void botaoVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoVoltarActionPerformed
@@ -628,65 +852,242 @@ public class FormOperacao extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_botaoVoltarActionPerformed
 
-    private void botaoInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirActionPerformed
-        /*
-        if (!camposVazios()) {
-            preencherClasse();
-            clienteDAO.inserir(cliente);
+    private void tipoAluguelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tipoAluguelActionPerformed
+        if (tipoAluguel.getSelectedItem() == "Por quilometragem") {
+            campoKM.setEnabled(true);
+        }
+        if (tipoAluguel.getSelectedItem() == "Por dia") {
+            campoKM.setEnabled(false);
+        }
+    }//GEN-LAST:event_tipoAluguelActionPerformed
+
+    private void botaoInserirAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirAActionPerformed
+        if (!camposVaziosA()) {
+            preencherClasseA();
+            aluguelDAO.inserir(aluguel);
             JOptionPane.showMessageDialog(this, "Inserção feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            limpar();
+            limparA();
         } else {
             JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
-        }*/
-    }//GEN-LAST:event_botaoInserirActionPerformed
+        }
+    }//GEN-LAST:event_botaoInserirAActionPerformed
 
-    private void botaoEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarActionPerformed
-        /*if (!camposVazios()) {
-            preencherClasse();
-            clienteDAO.atualizar(cliente);
+    private void botaoEditarAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarAActionPerformed
+        if (!camposVaziosA()) {
+            preencherClasseA();
+            aluguelDAO.inserir(aluguel);
             JOptionPane.showMessageDialog(this, "Alteração feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            padraoBotoes(false);
+            padraoBotoesA(false);
         } else {
             JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
-        }        
-    }//GEN-LAST:event_botaoEditarActionPerformed
+        }  
+    }//GEN-LAST:event_botaoEditarAActionPerformed
 
-    private void botaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirActionPerformed
-        if (!campoCPFPesquisa.getText().equals("   .   .   -  ")) {
-            int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o cadastro do cliente.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+    private void botaoExcluirAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirAActionPerformed
+        if (!campoIDAluguel.getText().equals("")) {
+            int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá o aluguel realizado.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
             if (confirmacao == 0) {
-                clienteDAO.deletar(campoCPFPesquisa.getText());
-                JOptionPane.showMessageDialog(this, "Cliente deletado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                padraoBotoes(false);
+                aluguelDAO.deletar(Integer.parseInt(campoIDAluguel.getText()));
+                JOptionPane.showMessageDialog(this, "Operação deletada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                padraoBotoesA(false);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "CPF do Cliente em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
-        }*/
-    }//GEN-LAST:event_botaoExcluirActionPerformed
-
-    private void botaoLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLimparActionPerformed
-        /*int confirmacao = JOptionPane.showConfirmDialog(null, "Deseja limpar todos os campos?", "Atenção!", JOptionPane.WARNING_MESSAGE);
-        if (confirmacao == 0) {
-            limpar();
+            JOptionPane.showMessageDialog(this, "ID em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_botaoLimparActionPerformed
+    }//GEN-LAST:event_botaoExcluirAActionPerformed
 
-    private void botaoInserir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserir1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botaoInserir1ActionPerformed
+    private void botaoLimparAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLimparAActionPerformed
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Deseja limpar todos os campos?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+        if (confirmacao == 0) {
+            limparA();
+        }
+    }//GEN-LAST:event_botaoLimparAActionPerformed
 
-    private void botaoExcluir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluir1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botaoExcluir1ActionPerformed
+    private void botaoPesquisarAluguelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarAluguelActionPerformed
+        if (botaoPesquisarAluguel.isSelected()) {
+            padraoBotoesA(true);
+            if (!campoIDAluguel.getText().equals("")) {
+                int tipo = 0;
+                if(tipoVeiculo.getSelectedItem() == "Veículo Comercial"){
+                    tipo = 1;
+                }
+                
+                aluguel = aluguelDAO.pesquisar(Integer.parseInt(campoIDAluguel.getText()), tipo);
+                preencherCamposA();
+                if (!campoChassi.getText().equals("")) {
+                    padraoBotoesA(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID inválido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                    padraoBotoesA(false);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "ID em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                padraoBotoesA(false);
+            }
+        } else {
+            padraoBotoesA(false);
+        }
+    }//GEN-LAST:event_botaoPesquisarAluguelActionPerformed
 
-    private void botaoEditar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botaoEditar1ActionPerformed
+    private void botaoInserirVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoInserirVActionPerformed
+        if (!camposVaziosV()) {
+            preencherClasseV();
+            vendaDAO.inserir(venda);
+            JOptionPane.showMessageDialog(this, "Inserção feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparV();
+        } else {
+            JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_botaoInserirVActionPerformed
 
-    private void botaoLimpar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLimpar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botaoLimpar1ActionPerformed
-    
+    private void botaoEditarVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoEditarVActionPerformed
+        if (!camposVaziosV()) {
+            preencherClasseV();
+            vendaDAO.inserir(venda);
+            JOptionPane.showMessageDialog(this, "Alteração feita com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            padraoBotoesV(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Campos em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+        } 
+    }//GEN-LAST:event_botaoEditarVActionPerformed
+
+    private void botaoExcluirVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoExcluirVActionPerformed
+        if (!campoIDVenda.getText().equals("")) {
+            int confirmacao = JOptionPane.showConfirmDialog(null, "Essa ação removerá a venda realizada.\n\nDeseja continuar?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+            if (confirmacao == 0) {
+                aluguelDAO.deletar(Integer.parseInt(campoIDAluguel.getText()));
+                JOptionPane.showMessageDialog(this, "Operação deletada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                padraoBotoesV(false);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "ID em branco.", "Erro!", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_botaoExcluirVActionPerformed
+
+    private void botaoLimparVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLimparVActionPerformed
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Deseja limpar todos os campos?", "Atenção!", JOptionPane.WARNING_MESSAGE);
+        if (confirmacao == 0) {
+            limparV();
+        }
+    }//GEN-LAST:event_botaoLimparVActionPerformed
+
+    private void campoDataFimFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_campoDataFimFocusLost
+        if (tipoAluguel.getSelectedItem() == "Por dia") {
+            if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+                veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+                try{
+                    System.out.println(getQtdDias());
+                    campoValorTotalA.setText(String.valueOf(getQtdDias() * veiculoComercial.getValorAluguelDiaria()));
+                }
+                catch(Exception e){
+                    System.out.println("Erro!");
+                }
+            }
+            else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+                veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+                try{
+                    System.out.println(getQtdDias());
+                    campoValorTotalA.setText(String.valueOf(getQtdDias() * veiculoPasseio.getValorAluguelDiaria()));
+                }
+                catch(Exception e){
+                    System.out.println("Erro!");
+                }
+            }  
+        }
+    }//GEN-LAST:event_campoDataFimFocusLost
+
+    private void campoDataVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoDataVendaActionPerformed
+        if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+            veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+            try{
+                campoValorTotal.setText(String.valueOf(veiculoComercial.getValorVenda()));
+            }
+            catch(Exception e){
+                System.out.println("Erro!");
+            }
+        }
+        else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+            veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+            try{
+                campoValorTotal.setText(String.valueOf(veiculoPasseio.getValorVenda()));
+            }
+            catch(Exception e){
+                System.out.println("Erro!");
+            }
+        }
+    }//GEN-LAST:event_campoDataVendaActionPerformed
+
+    private void campoKMFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_campoKMFocusLost
+        if (tipoAluguel.getSelectedItem() == "Por quilometragem") {
+            if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+                veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+                try{
+                    System.out.println(getQtdDias());
+                    campoValorTotalA.setText(String.valueOf(Integer.parseInt(campoKM.getText()) * veiculoComercial.getValorAluguelKM()));
+                }
+                catch(Exception e){
+                    System.out.println("Erro!");
+                }
+            }
+            else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+                veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+                try{
+                    System.out.println(getQtdDias());
+                    campoValorTotalA.setText(String.valueOf(Integer.parseInt(campoKM.getText()) * veiculoPasseio.getValorAluguelKM()));
+                }
+                catch(Exception e){
+                    System.out.println("Erro!");
+                }
+            }  
+        }
+    }//GEN-LAST:event_campoKMFocusLost
+
+    private void campoDataVendaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_campoDataVendaFocusLost
+        if(tipoVeiculo.getSelectedItem().toString().equals("Veículo Comercial")){
+            veiculoComercial = veiculoDAO.pesquisar(campoChassi.getText(), 1);
+            try{
+                campoValorTotal.setText(String.valueOf(veiculoComercial.getValorVenda()));
+            }
+            catch(Exception e){
+                System.out.println("Erro!");
+            }
+        }
+        else if(tipoVeiculo.getSelectedItem().toString().equals("Veículo de Passeio")){
+            veiculoPasseio = veiculoDAO.pesquisar(campoChassi.getText(), 0);
+            try{
+                campoValorTotal.setText(String.valueOf(veiculoPasseio.getValorVenda()));
+            }
+            catch(Exception e){
+                System.out.println("Erro!");
+            }
+        }
+    }//GEN-LAST:event_campoDataVendaFocusLost
+
+    private void botaoPesquisarVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoPesquisarVendaActionPerformed
+        if (botaoPesquisarVenda.isSelected()) {
+            padraoBotoesV(true);
+            if (!campoIDVenda.getText().equals("")) {
+                int tipo = 0;
+                if(tipoVeiculo.getSelectedItem() == "Veículo Comercial"){
+                    tipo = 1;
+                }
+                
+                venda = vendaDAO.pesquisar(Integer.parseInt(campoIDVenda.getText()), tipo);
+                preencherCamposV();
+                if (!campoChassi.getText().equals("")) {
+                    padraoBotoesV(true);
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID inválido!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                    padraoBotoesV(false);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "ID em branco!", "Erro!", JOptionPane.ERROR_MESSAGE);
+                padraoBotoesV(false);
+            }
+        } else {
+            padraoBotoesV(false);
+        }
+    }//GEN-LAST:event_botaoPesquisarVendaActionPerformed
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -722,14 +1123,14 @@ public class FormOperacao extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton botaoEditar;
-    private javax.swing.JButton botaoEditar1;
-    private javax.swing.JButton botaoExcluir;
-    private javax.swing.JButton botaoExcluir1;
-    private javax.swing.JButton botaoInserir;
-    private javax.swing.JButton botaoInserir1;
-    private javax.swing.JButton botaoLimpar;
-    private javax.swing.JButton botaoLimpar1;
+    private javax.swing.JButton botaoEditarA;
+    private javax.swing.JButton botaoEditarV;
+    private javax.swing.JButton botaoExcluirA;
+    private javax.swing.JButton botaoExcluirV;
+    private javax.swing.JButton botaoInserirA;
+    private javax.swing.JButton botaoInserirV;
+    private javax.swing.JButton botaoLimparA;
+    private javax.swing.JButton botaoLimparV;
     private javax.swing.JToggleButton botaoPesquisarAluguel;
     private javax.swing.JToggleButton botaoPesquisarVenda;
     private javax.swing.JButton botaoVoltar;
@@ -754,8 +1155,10 @@ public class FormOperacao extends javax.swing.JFrame {
     private javax.swing.JLabel labelNome;
     private javax.swing.JLabel labelNome1;
     private javax.swing.JLabel labelNome2;
+    private javax.swing.JLabel labelNome3;
     private javax.swing.JLabel labelNumero;
     private javax.swing.JLabel labelNumero2;
+    private javax.swing.JLabel labelNumero3;
     private javax.swing.JLabel labelSubtitulo1;
     private javax.swing.JLabel labelSubtitulo2;
     private javax.swing.JLabel labelSubtitulo3;
@@ -770,5 +1173,7 @@ public class FormOperacao extends javax.swing.JFrame {
     private javax.swing.JPanel painelFormulario2;
     private javax.swing.JPanel painelPesquisa;
     private javax.swing.JPanel panelTitulo;
+    private javax.swing.JComboBox<String> tipoAluguel;
+    private javax.swing.JComboBox<String> tipoVeiculo;
     // End of variables declaration//GEN-END:variables
 }
